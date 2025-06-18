@@ -1,15 +1,22 @@
-# Dockerfile for NestJS app
-FROM node:22-alpine AS builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run build
+# Development stage
+FROM node:22-alpine AS development
 
-FROM node:22-alpine AS runner
 WORKDIR /app
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package*.json ./
+
+# Install pnpm
+RUN npm install -g pnpm
+
+# Copy package files
+COPY package.json pnpm-lock.yaml* ./
+
+# Install dependencies
+RUN pnpm install
+
+# Copy application code
+COPY . .
+
+# Expose port
 EXPOSE 3000
-CMD ["npm", "run", "start:dev"]
+
+# Start the application in development mode
+CMD ["pnpm", "run", "start:dev"]
