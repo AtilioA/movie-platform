@@ -21,6 +21,7 @@ import { PaginationParamsDto } from '../shared/dto/pagination-params.dto';
 import { PaginationResponseDto } from '../shared/dto/pagination-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PaginationInterceptor } from '../shared/interceptors/pagination.interceptor';
+import { Public } from '../shared/decorators/public.decorator';
 
 @ApiTags('movies')
 @Controller('movies')
@@ -28,6 +29,7 @@ import { PaginationInterceptor } from '../shared/interceptors/pagination.interce
 export class MoviesController {
   constructor(private readonly moviesService: MoviesService) {}
 
+  @Public()
   @Get()
   @UseInterceptors(PaginationInterceptor)
   @ApiOperation({ summary: 'Get all movies with pagination and search' })
@@ -43,6 +45,7 @@ export class MoviesController {
     return this.moviesService.findAllMovies(paginationParams, search);
   }
 
+  @Public()
   @Get('search')
   @UseInterceptors(PaginationInterceptor)
   @ApiOperation({ summary: 'Search movies by title with pagination' })
@@ -61,6 +64,7 @@ export class MoviesController {
     return this.moviesService.searchMoviesByTitle(query.trim(), paginationParams);
   }
 
+  @Public()
   @Get(':id')
   @ApiOperation({ summary: 'Get a single movie by ID' })
   @ApiResponse({
