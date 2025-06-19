@@ -10,6 +10,7 @@ import {
   UseGuards,
   Request,
   Patch,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ActorsService } from './actors.service';
@@ -71,7 +72,7 @@ export class ActorsController {
     type: ActorResponseDto
   })
   @ApiResponse({ status: 404, description: 'Actor not found' })
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     return this.actorsService.findOne(id);
   }
 
@@ -106,7 +107,7 @@ export class ActorsController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 404, description: 'Actor not found' })
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateActorDto: UpdateActorDto,
   ) {
     return this.actorsService.update(id, updateActorDto);
@@ -119,7 +120,7 @@ export class ActorsController {
   @ApiResponse({ status: 200, description: 'The actor has been successfully deleted' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 404, description: 'Actor not found' })
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     await this.actorsService.remove(id);
     return { message: 'Actor deleted successfully' };
   }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseUUIDPipe } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -33,7 +33,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Get a user by ID' })
   @ApiResponse({ status: 200, description: 'Return the user.', type: User })
   @ApiResponse({ status: 404, description: 'User not found.' })
-  async findOne(@Param('id') id: string): Promise<User> {
+  async findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string): Promise<User> {
     return this.usersService.findOne(id);
   }
 
@@ -44,7 +44,7 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'The user has been updated.', type: User })
   @ApiResponse({ status: 404, description: 'User not found.' })
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<User> {
     return this.usersService.update(id, updateUserDto);
@@ -56,7 +56,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Delete a user' })
   @ApiResponse({ status: 200, description: 'The user has been deleted.' })
   @ApiResponse({ status: 404, description: 'User not found.' })
-  async remove(@Param('id') id: string): Promise<void> {
+  async remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string): Promise<void> {
     return this.usersService.remove(id);
   }
 }

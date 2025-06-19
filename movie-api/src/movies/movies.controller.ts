@@ -10,6 +10,7 @@ import {
   UseGuards,
   Request,
   Patch,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { MoviesService } from './movies.service';
@@ -65,13 +66,10 @@ export class MoviesController {
   @Public()
   @Get(':id')
   @ApiOperation({ summary: 'Get a single movie by ID' })
-  @ApiResponse({
-    status: 200,
-    description: 'Returns the requested movie',
-    type: MovieResponseDto
-  })
+  @ApiResponse({ status: 200, description: 'The movie was found', type: MovieResponseDto })
+  @ApiResponse({ status: 400, description: 'Invalid UUID format' })
   @ApiResponse({ status: 404, description: 'Movie not found' })
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     return this.moviesService.findOneMovie(id);
   }
 
@@ -106,7 +104,7 @@ export class MoviesController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 404, description: 'Movie not found' })
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateMovieDto: UpdateMovieDto,
   ) {
     return this.moviesService.updateMovie(id, updateMovieDto);
@@ -119,7 +117,7 @@ export class MoviesController {
   @ApiResponse({ status: 200, description: 'The movie has been successfully deleted' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 404, description: 'Movie not found' })
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     await this.moviesService.removeMovie(id);
     return { message: 'Movie deleted successfully' };
   }
