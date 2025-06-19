@@ -6,27 +6,12 @@ import { Actor } from './entities/actor.entity';
 import { CreateActorDto } from './dto/create-actor.dto';
 import { UpdateActorDto } from './dto/update-actor.dto';
 import { NotFoundException } from '@nestjs/common';
+import { createPaginationParams } from '../../test/test-utils';
 
 describe('ActorsService', () => {
   let service: ActorsService;
   let repository: Repository<Actor>;
 
-  // Helper function to create pagination params for testing
-  const createPaginationParams = (params: { limit?: number; offset?: number; page?: number } = {}) => {
-    const limit = params.limit || 10;
-    const offset = params.offset || 0;
-    const page = params.page || 1;
-    
-    return {
-      limit,
-      offset,
-      page,
-      getLimit: () => limit,
-      getOffset: () => offset,
-      sort: undefined,
-      search: undefined
-    };
-  };
 
   const mockActor = {
     id: '1',

@@ -3,6 +3,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { DeleteResult, ILike } from 'typeorm';
 import { Movie } from './entities/movie.entity';
 import { MoviesService } from './movies.service';
+import { createPaginationParams } from '../../test/test-utils';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 import { NotFoundException } from '@nestjs/common';
@@ -53,23 +54,6 @@ describe('MoviesService', () => {
     return {
       ...baseMovie,
       ...overrides,
-    };
-  };
-
-    // Helper function to create pagination params for testing
-  const createPaginationParams = (params: { limit?: number; offset?: number; page?: number } = {}) => {
-    const limit = params.limit || 10;
-    const offset = params.offset || 0;
-    const page = params.page || 1;
-
-    return {
-      limit,
-      offset,
-      page,
-      getLimit: () => limit,
-      getOffset: () => offset,
-      sort: undefined,
-      search: undefined
     };
   };
 
