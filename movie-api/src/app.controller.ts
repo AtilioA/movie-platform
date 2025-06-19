@@ -1,12 +1,18 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, VERSION_NEUTRAL } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AppService } from './app.service';
 
-@Controller()
+@ApiTags('Health')
+@Controller({
+  version: VERSION_NEUTRAL,
+  path: '',
+})
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Get('health')
+  @ApiOperation({ summary: 'Check if the API is running' })
+  getHealth(): { status: string } {
+    return { status: 'ok' };
   }
 }
