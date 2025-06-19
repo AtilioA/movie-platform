@@ -4,7 +4,7 @@ FROM node:22-alpine AS development
 WORKDIR /app
 
 # Install pnpm
-RUN npm install -g pnpm
+RUN npm install -g pnpm ts-node tsconfig-paths
 
 # Copy package files
 COPY package.json pnpm-lock.yaml* ./

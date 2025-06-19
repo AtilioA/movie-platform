@@ -1,18 +1,18 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './src/app.module';
+import { AppModule } from './app.module';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
-import { User } from './src/users/entities/user.entity';
-import { Actor } from './src/actors/entities/actor.entity';
-import { Movie } from './src/movies/entities/movie.entity';
-import { Rating } from './src/ratings/entities/rating.entity';
+import { User } from './users/entities/user.entity';
+import { Actor } from './actors/entities/actor.entity';
+import { Movie } from './movies/entities/movie.entity';
+import { Rating } from './ratings/entities/rating.entity';
 
 import { Repository } from 'typeorm';
 
-import { userSeeds } from './src/database/seeds/users.seed';
-import { actorSeeds } from './src/database/seeds/actors.seed';
-import { movieSeeds } from './src/database/seeds/movies.seed';
-import { ratingSeeds } from './src/database/seeds/ratings.seed';
+import { userSeeds } from './database/seeds/users.seed';
+import { actorSeeds } from './database/seeds/actors.seed';
+import { movieSeeds } from './database/seeds/movies.seed';
+import { ratingSeeds } from './database/seeds/ratings.seed';
 
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule, { logger: false });
