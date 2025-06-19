@@ -8,42 +8,41 @@ Create a **Node.js** backend using **NestJS** and **TypeScript** for managing a 
 
 ### **General Requirements**
 
-- Implement a **NestJS** backend with **TypeScript**.
-- Use an **ORM** (TypeORM, Prisma, Drizzle, etc) with your database of choice and use a **code-first** approach for defining the schema.
-- Implement **CRUD** (Create, Retrieve, Update, Delete) endpoints for:
-  - **Movies**
-  - **Actors**
-  - **Movie Ratings**
-- Seed the database with some sample data.
+- [x] Implement a **NestJS** backend with **TypeScript**.
+- [x] Use an **ORM** (TypeORM, Prisma, Drizzle, etc) with your database of choice and use a **code-first** approach for defining the schema.
+- [x] Implement **CRUD** (Create, Retrieve, Update, Delete) endpoints for:
+  - [x] **Movies**
+  - [x] **Actors**
+  - [ ] **Movie Ratings**
+- [x] Seed the database with some sample data.
 
 ### **API Functional Requirements**
 
-- Implement **search functionality** that allows partial searches for **Movies or Actors** by name.
-- Implement relationships:
-  - A **Movie** can have multiple **Actors**.
-  - A **Movie** can have multiple **Ratings**.
-  - An **Actor** can be in multiple **Movies**.
-- Implement an API endpoint to:
-  - View all **Movies** an **Actor** has been in.
-  - View all **Actors** in a given **Movie**.
+- [x] Implement **search functionality** that allows partial searches for **Movies or Actors** by name.
+- [x] Implement relationships:
+  - [x] A **Movie** can have multiple **Actors**.
+  - [x] A **Movie** can have multiple **Ratings**.
+  - [x] An **Actor** can be in multiple **Movies**.
+- [~] Implement an API endpoint to:
+  - [ ] View all **Movies** an **Actor** has been in.
+  - [ ] View all **Actors** in a given **Movie**.
 
 ### **Security**
 
-- Require an **API secret/token** for `Create`, `Update`, and `Delete` operations.
-- Implement **middleware** for token validation (e.g., NestJS **Guards**).
-- The API secret/token can be hardcoded for simplicity.
+- [x] Require an **API secret/token** for `Create`, `Update`, and `Delete` operations.
+- [x] Implement **middleware** for token validation (e.g., NestJS **Guards**).
+- [ ] The API secret/token can be hardcoded for simplicity.
 
 ### **Validation & Error Handling**
 
-- Properly validate requests and return appropriate **HTTP responses** and **status codes**.
-- Ensure the API does not crash due to bad requests or unhandled errors.
+- [x] Properly validate requests and return appropriate **HTTP responses** and **status codes**.
+- [x] Ensure the API does not crash due to bad requests or unhandled errors.
 
 ### **Bonus Features**
 
-- Implement **Docker** support for both the backend and database.
-- Implement **authentication** with JWT (e.g., NestJS **Passport** module).
-- Implement **unit tests** for your backend.
-- Implement a basic **GitLab CI/CD pipeline** to automate testing and deployments.
+- [x] Implement **Docker** support for both the backend and database.
+- [x] Implement **authentication** with JWT (e.g., NestJS **Passport** module).
+- [x] Implement **unit tests** for your backend.
 
 ---
 
