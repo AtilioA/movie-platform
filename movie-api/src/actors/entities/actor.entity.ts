@@ -1,7 +1,7 @@
 import { Entity, Column, ManyToMany } from 'typeorm';
 import { IsString } from 'class-validator';
-import { BaseEntity } from '@app/shared/entities/base.entity';
-import { Movie } from '@app/movies/entities/movie.entity';
+import { BaseEntity } from '../../shared/entities/base.entity';
+import { Movie } from '../../movies/entities/movie.entity';
 
 @Entity('actors')
 export class Actor extends BaseEntity {

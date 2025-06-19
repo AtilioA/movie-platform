@@ -1,7 +1,7 @@
 import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { IsNumber, Min, Max, IsString, IsOptional, IsUUID } from 'class-validator';
-import { BaseEntity } from '@app/shared';
-import { Movie } from '@app/movies/entities/movie.entity';
+import { BaseEntity } from '../../shared/entities/base.entity';
+import { Movie } from '../../movies/entities/movie.entity';
 
 @Entity('ratings')
 export class Rating extends BaseEntity {

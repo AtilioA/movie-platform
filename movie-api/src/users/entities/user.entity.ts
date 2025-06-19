@@ -1,7 +1,7 @@
 import { Entity, Column, BeforeInsert, BeforeUpdate } from 'typeorm';
 import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 import * as bcrypt from 'bcryptjs';
-import { BaseEntity } from '@app/shared/entities/base.entity';
+import { BaseEntity } from '../../shared/entities/base.entity';
 
 @Entity('users')
 export class User extends BaseEntity {

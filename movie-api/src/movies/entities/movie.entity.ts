@@ -1,8 +1,8 @@
 import { Entity, Column, ManyToMany, JoinTable, OneToMany } from 'typeorm';
 import { IsString } from 'class-validator';
-import { BaseEntity } from '@app/shared/entities/base.entity';
-import { Actor } from '@app/actors/entities/actor.entity';
-import { Rating } from '@app/ratings/entities/rating.entity';
+import { BaseEntity } from '../../shared/entities/base.entity';
+import { Actor } from '../../actors/entities/actor.entity';
+import { Rating } from '../../ratings/entities/rating.entity';
 
 @Entity('movies')
 export class Movie extends BaseEntity {
