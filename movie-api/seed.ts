@@ -1,11 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './src/app.module';
 import { getRepositoryToken } from '@nestjs/typeorm';
+
 import { User } from './src/users/entities/user.entity';
 import { Actor } from './src/actors/entities/actor.entity';
 import { Movie } from './src/movies/entities/movie.entity';
 import { Rating } from './src/ratings/entities/rating.entity';
+
 import { Repository } from 'typeorm';
+
 import { userSeeds } from './src/database/seeds/users.seed';
 import { actorSeeds } from './src/database/seeds/actors.seed';
 import { movieSeeds } from './src/database/seeds/movies.seed';
@@ -47,7 +50,7 @@ async function bootstrap() {
     else movie = movieRepo.merge(movie, { title: m.title });
     // Attach actors by name
     const actorsForMovie = m.actors.map((a: any) => actorEntities.find((ae) => ae.name === a.name));
-    movie.actors = actorsForMovie;
+    movie.actors = actorsForMovie.filter((a) => a !== undefined) as Actor[];
     movie = await movieRepo.save(movie);
     movieEntities.push(movie);
   }
