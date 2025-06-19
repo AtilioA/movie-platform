@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, FindOptionsWhere, ILike, FindManyOptions } from 'typeorm';
 import { BaseService } from '../shared/services/base.service';
 import { Movie } from './entities/movie.entity';
+import { Actor } from '../actors/entities/actor.entity';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 import { PaginationParamsDto } from '../shared/dto/pagination-params.dto';
@@ -18,10 +19,12 @@ export class MoviesService extends BaseService<Movie> {
   }
 
   async createMovie(createMovieDto: CreateMovieDto): Promise<Movie> {
+    const { actorIds } = createMovieDto;
     const movie = this.movieRepository.create(createMovieDto);
 
-    if (createMovieDto.actorIds && createMovieDto.actorIds.length > 0) {
-      movie.actors = createMovieDto.actorIds.map(id => ({ id } as any));
+    // Set up actor relationships if actorIds are provided
+    if (actorIds?.length) {
+      movie.actors = actorIds.map(actorId => ({ id: String(actorId) } as Actor));
     }
 
     return this.movieRepository.save(movie);
@@ -46,10 +49,21 @@ export class MoviesService extends BaseService<Movie> {
       order: sort ? { [sort]: 'ASC' } : { title: 'ASC' },
     };
 
-    return this.paginate(page, limit, options);
+    const result = await this.paginate(page, limit, options);
+    return {
+      items: result.items,
+      total: result.total,
+      page: result.page,
+      totalPages: result.totalPages,
+    };
   }
 
   async findOneMovie(id: string): Promise<Movie> {
+    // Validate ID is not empty or invalid format
+    if (!id || typeof id !== 'string' || id.trim() === '') {
+      throw new NotFoundException(`Movie with ID ${id} not found`);
+    }
+
     const movie = await this.movieRepository.findOne({
       where: { id },
       relations: ['actors', 'ratings'],
@@ -70,13 +84,18 @@ export class MoviesService extends BaseService<Movie> {
     }
 
     if (updateMovieDto.actorIds) {
-      movie.actors = updateMovieDto.actorIds.map(actorId => ({ id: actorId } as any));
+      movie.actors = updateMovieDto.actorIds.map(actorId => ({ id: String(actorId) } as Actor));
     }
 
     return this.movieRepository.save(movie);
   }
 
   async removeMovie(id: string): Promise<void> {
+    // Validate ID is not empty or invalid format
+    if (!id || typeof id !== 'string' || id.trim() === '') {
+      throw new NotFoundException(`Movie with ID ${id} not found`);
+    }
+
     const result = await this.movieRepository.delete(id);
 
     if (result.affected === 0) {
@@ -84,10 +103,42 @@ export class MoviesService extends BaseService<Movie> {
     }
   }
 
-  async searchMoviesByTitle(search: string): Promise<Movie[]> {
-    return this.movieRepository.find({
-      where: { title: ILike(`%${search}%`) },
-      take: 10,
-    });
+  async searchMoviesByTitle(
+    search: string,
+    paginationParams?: PaginationParamsDto,
+  ): Promise<PaginationResult<Movie>> {
+    const limit = paginationParams?.limit || 10;
+    const offset = paginationParams?.offset || 0;
+    const page = Math.floor(offset / limit) + 1;
+
+    // Validate search term
+    if (!search || typeof search !== 'string' || search.trim().length === 0) {
+      return {
+        items: [],
+        total: 0,
+        page: 1,
+        totalPages: 0,
+      };
+    }
+
+    const sanitizedSearch = search.trim();
+
+    const where: FindOptionsWhere<Movie> = {
+      title: ILike(`%${sanitizedSearch}%`),
+    };
+
+    const options: FindManyOptions<Movie> = {
+      where,
+      relations: ['actors'],
+      order: { title: 'ASC' },
+    };
+
+    const result = await this.paginate(page, limit, options);
+    return {
+      items: result.items,
+      total: result.total,
+      page,
+      totalPages: result.totalPages,
+    };
   }
 }
