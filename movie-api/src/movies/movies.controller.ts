@@ -7,7 +7,6 @@ import {
   Delete,
   Query,
   UseInterceptors,
-  ClassSerializerInterceptor,
   UseGuards,
   Request,
   Patch,
@@ -25,7 +24,6 @@ import { Public } from '../shared/decorators/public.decorator';
 
 @ApiTags('movies')
 @Controller('movies')
-@UseInterceptors(ClassSerializerInterceptor)
 export class MoviesController {
   constructor(private readonly moviesService: MoviesService) {}
 
