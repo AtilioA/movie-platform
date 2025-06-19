@@ -46,11 +46,11 @@ export class AuthService {
       throw new ConflictException('Email already in use');
     }
 
-    const hashedPassword = await bcrypt.hash(registerDto.password, 10);
     const user = await this.usersService.create({
       email: registerDto.email,
       name: registerDto.name,
-      password: hashedPassword
+      // Password is already hashed by the user module
+      password: registerDto.password
     });
 
     return this.generateAuthResponse(user);
