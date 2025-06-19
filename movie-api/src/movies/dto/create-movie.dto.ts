@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsArray, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, IsArray, IsOptional, IsUUID } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateMovieDto {
@@ -8,6 +8,7 @@ export class CreateMovieDto {
 
   @IsArray()
   @IsOptional()
-  @Type(() => Number)
-  actorIds?: number[];
+  @IsUUID('4', { each: true })
+  @Type(() => String)
+  actorIds?: string[];
 }

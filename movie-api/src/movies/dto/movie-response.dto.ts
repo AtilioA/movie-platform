@@ -1,8 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsUUID } from 'class-validator';
 
 export class MovieActorDto {
   @ApiProperty({ description: 'The unique identifier of the actor' })
-  id: number;
+  @IsUUID()
+  id: string;
 
   @ApiProperty({ description: 'The name of the actor' })
   name: string;
@@ -10,13 +12,15 @@ export class MovieActorDto {
 
 export class MovieRatingDto {
   @ApiProperty({ description: 'The unique identifier of the rating' })
-  id: number;
+  @IsUUID()
+  id: string;
 
   @ApiProperty({ description: 'The rating score' })
   score: number;
 
   @ApiProperty({ description: 'The ID of the user who created the rating' })
-  userId: number;
+  @IsUUID()
+  userId: string;
 
   @ApiProperty({ description: 'The date when the rating was created' })
   createdAt: Date;
@@ -24,7 +28,8 @@ export class MovieRatingDto {
 
 export class MovieResponseDto {
   @ApiProperty({ description: 'The unique identifier of the movie' })
-  id: number;
+  @IsUUID()
+  id: string;
 
   @ApiProperty({ description: 'The title of the movie' })
   title: string;

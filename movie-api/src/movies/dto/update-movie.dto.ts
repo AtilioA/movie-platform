@@ -1,6 +1,7 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateMovieDto } from './create-movie.dto';
-import { IsArray, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsOptional, IsString, IsUUID } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class UpdateMovieDto extends PartialType(CreateMovieDto) {
   @IsString()
@@ -9,5 +10,7 @@ export class UpdateMovieDto extends PartialType(CreateMovieDto) {
 
   @IsArray()
   @IsOptional()
-  actorIds?: number[];
+  @IsUUID('4', { each: true })
+  @Type(() => String)
+  actorIds?: string[];
 }

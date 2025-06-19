@@ -5,12 +5,28 @@ import { ActorsService } from './actors.service';
 import { Actor } from './entities/actor.entity';
 import { CreateActorDto } from './dto/create-actor.dto';
 import { UpdateActorDto } from './dto/update-actor.dto';
-import { PaginationParamsDto } from '../shared/dto/pagination-params.dto';
 import { NotFoundException } from '@nestjs/common';
 
 describe('ActorsService', () => {
   let service: ActorsService;
   let repository: Repository<Actor>;
+
+  // Helper function to create pagination params for testing
+  const createPaginationParams = (params: { limit?: number; offset?: number; page?: number } = {}) => {
+    const limit = params.limit || 10;
+    const offset = params.offset || 0;
+    const page = params.page || 1;
+    
+    return {
+      limit,
+      offset,
+      page,
+      getLimit: () => limit,
+      getOffset: () => offset,
+      sort: undefined,
+      search: undefined
+    };
+  };
 
   const mockActor = {
     id: '1',
@@ -71,8 +87,8 @@ describe('ActorsService', () => {
   });
 
   describe('findAll', () => {
-    it('should return paginated actors', async () => {
-      const paginationParams: PaginationParamsDto = { limit: 10, offset: 0 };
+    it('should return actors matching search term', async () => {
+      const paginationParams = createPaginationParams({ limit: 10, offset: 0 });
       const search = 'test';
       
       const result = await service.findAll(paginationParams, search);
@@ -88,9 +104,9 @@ describe('ActorsService', () => {
     });
 
     it('should return all actors when no search term is provided', async () => {
-      const paginationParams: PaginationParamsDto = { limit: 10, offset: 0 };
-      
-      await service.findAll(paginationParams);
+      const paginationParams = createPaginationParams({ limit: 10, offset: 0 });
+      const search = '';   
+      await service.findAll(paginationParams, search);
       
       expect(repository.findAndCount).toHaveBeenCalledWith({
         where: {},
@@ -159,14 +175,14 @@ describe('ActorsService', () => {
   describe('searchActorsByName', () => {
     it('should search actors by name with pagination', async () => {
       const name = 'test';
-      const paginationParams: PaginationParamsDto = { limit: 10, offset: 0 };
+      const paginationParams = createPaginationParams({ limit: 10, offset: 0 });
       
       const result = await service.searchActorsByName(name, paginationParams);
 
       expect(repository.findAndCount).toHaveBeenCalledWith({
         where: { name: expect.any(Object) },
-        take: paginationParams.limit,
-        skip: paginationParams.offset,
+        take: paginationParams.getLimit(),
+        skip: paginationParams.getOffset(),
         order: { name: 'ASC' },
       });
       expect(result.items).toHaveLength(1);

@@ -56,15 +56,32 @@ describe('MoviesService', () => {
     };
   };
 
+    // Helper function to create pagination params for testing
+  const createPaginationParams = (params: { limit?: number; offset?: number; page?: number } = {}) => {
+    const limit = params.limit || 10;
+    const offset = params.offset || 0;
+    const page = params.page || 1;
+
+    return {
+      limit,
+      offset,
+      page,
+      getLimit: () => limit,
+      getOffset: () => offset,
+      sort: undefined,
+      search: undefined
+    };
+  };
+
   // Test DTO interfaces for testing
   interface TestCreateMovieDto {
     title: string;
-    actorIds: number[];
+    actorIds: string[];
   }
 
   interface TestUpdateMovieDto {
     title?: string;
-    actorIds?: number[];
+    actorIds?: string[];
   }
 
   let mockMovie: Movie;
@@ -79,7 +96,7 @@ describe('MoviesService', () => {
   beforeEach(async () => {
         // Create a mock movie with all required properties
     mockMovie = createMockMovie({
-      id: '1',
+      id: '123e4567-e89b-12d3-a456-426614174000',
       title: 'Test Movie',
       actors: [],
       ratings: [],
@@ -166,7 +183,11 @@ describe('MoviesService', () => {
     it('should create a movie with actors when actorIds are provided', async () => {
       const createMovieDto = {
         title: 'Movie with Actors',
-        actorIds: [1, 2, 3],
+        actorIds: [
+          '123e4567-e89b-12d3-a456-426614174001',
+          '123e4567-e89b-12d3-a456-426614174002',
+          '123e4567-e89b-12d3-a456-426614174003'
+        ],
       };
 
       const mockMovieWithActors = {
@@ -182,29 +203,29 @@ describe('MoviesService', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       }));
-      
+
       repository.save.mockResolvedValue(mockMovieWithActors);
 
       const result = await service.createMovie(createMovieDto);
 
       // Verify the repository.create was called with the DTO
       expect(repository.create).toHaveBeenCalledWith(createMovieDto);
-      
+
       // Verify the save was called with the movie including actors
       expect(repository.save).toHaveBeenCalledWith(expect.objectContaining({
         ...createMovieDto,
         actors: expect.arrayContaining(createMovieDto.actorIds.map(id => expect.objectContaining({ id: String(id) })))
       }));
-      
+
       expect(result.actors).toHaveLength(3);
     });
   });
 
   describe('findAllMovies', () => {
     it('should return paginated movies', async () => {
-      const paginationParams = { limit: 10, offset: 0 };
+      const paginationParams = createPaginationParams({ limit: 10, offset: 0 });
       const mockMovies = [mockMovie];
-      
+
       // Mock findAndCount to return the expected result
       repository.findAndCount.mockResolvedValue([mockMovies, 1]);
 
@@ -218,7 +239,7 @@ describe('MoviesService', () => {
         take: 10,
         skip: 0
       });
-      
+
       // Verify the result structure
       expect(result).toEqual({
         items: mockMovies,
@@ -229,8 +250,8 @@ describe('MoviesService', () => {
     });
 
     it('should handle empty results', async () => {
-      const paginationParams = { limit: 10, offset: 0 };
-      
+      const paginationParams = createPaginationParams({ limit: 10, offset: 0 });
+
       // Mock findAndCount to return empty results
       repository.findAndCount.mockResolvedValue([[], 0]);
 
@@ -244,7 +265,7 @@ describe('MoviesService', () => {
         take: 10,
         skip: 0
       });
-      
+
       // Verify the result structure
       expect(result).toEqual({
         items: [],
@@ -255,10 +276,10 @@ describe('MoviesService', () => {
     });
 
     it('should handle search term', async () => {
-      const paginationParams = { limit: 10, offset: 0 };
+      const paginationParams = createPaginationParams({ limit: 5, offset: 10, page: 3 });
       const searchTerm = 'test';
       const mockMovies = [mockMovie];
-      
+
       // Mock findAndCount to return the expected result
       repository.findAndCount.mockResolvedValue([mockMovies, 1]);
 
@@ -269,23 +290,29 @@ describe('MoviesService', () => {
         where: { title: ILike(`%${searchTerm}%`) },
         relations: ['actors'],
         order: { title: 'ASC' },
-        take: 10,
-        skip: 0
+        take: paginationParams.getLimit(),
+        skip: paginationParams.getOffset()
       });
-      
+
       // Verify the result structure
       expect(result).toEqual({
         items: mockMovies,
         total: 1,
-        page: 1,
+        page: 3,
         totalPages: 1
       });
     });
 
     it('should handle pagination parameters correctly', async () => {
-      const paginationParams = { limit: 5, offset: 10 }; // Page 3 (10/5 + 1)
+      const paginationParams = {
+        limit: 5,
+        offset: 10,
+        getLimit: () => 5,
+        getOffset: () => 10,
+        page: 3
+      };
       const mockMovies = [mockMovie];
-      
+
       // Mock findAndCount to return the expected result
       repository.findAndCount.mockResolvedValue([mockMovies, 1]);
 
@@ -299,7 +326,7 @@ describe('MoviesService', () => {
         take: 5,
         skip: 10
       });
-      
+
       // Verify the result structure
       expect(result).toEqual({
         items: mockMovies,
@@ -376,13 +403,19 @@ describe('MoviesService', () => {
     it('should handle partial updates', async () => {
       const updateMovieDto: TestUpdateMovieDto = {
         title: 'New Title',
-        actorIds: [1, 2]
+        actorIds: [
+          '123e4567-e89b-12d3-a456-426614174001',
+          '123e4567-e89b-12d3-a456-426614174002'
+        ]
       };
 
       const updatedMovie = {
         ...mockMovie,
         title: 'New Title',
-        actors: [{ id: 1 }, { id: 2 }]
+        actors: [
+          { id: '123e4567-e89b-12d3-a456-426614174001' },
+          { id: '123e4567-e89b-12d3-a456-426614174002' }
+        ]
       };
 
       jest.spyOn(service, 'findOneMovie').mockResolvedValue(mockMovie as any);
@@ -455,8 +488,8 @@ describe('MoviesService', () => {
     it('should search movies by title with pagination', async () => {
       const searchTerm = 'test';
       const mockMovies = [mockMovie];
-      const paginationParams = { limit: 10, offset: 0 };
-      
+      const paginationParams = createPaginationParams({ limit: 10, offset: 0 });
+
       // Mock findAndCount to return the expected result
       repository.findAndCount.mockResolvedValue([mockMovies, 1]);
 
@@ -470,7 +503,7 @@ describe('MoviesService', () => {
         take: 10,
         skip: 0
       });
-      
+
       // Verify the result structure
       expect(result).toEqual({
         items: mockMovies,
@@ -502,9 +535,15 @@ describe('MoviesService', () => {
 
     it('should handle pagination parameters correctly', async () => {
       const searchTerm = 'test';
-      const paginationParams = { limit: 5, offset: 10 }; // Page 3 with 5 items per page
+      const paginationParams = {
+        limit: 5,
+        offset: 10,
+        getLimit: () => 5,
+        getOffset: () => 10,
+        page: 3
+      };
       const mockMovies = [mockMovie];
-      
+
       // Mock findAndCount to return the expected result
       repository.findAndCount.mockResolvedValue([mockMovies, 1]);
 
@@ -518,7 +557,7 @@ describe('MoviesService', () => {
         take: 5,
         skip: 10
       });
-      
+
       // Verify the result structure
       expect(result).toEqual({
         items: mockMovies,
@@ -530,9 +569,9 @@ describe('MoviesService', () => {
 
     it('should handle special characters in search term', async () => {
       const specialChars = 'test!@#$%^&*()_+{}|:\"<>?`~[]';
-      const paginationParams = { limit: 10, offset: 0 };
+      const paginationParams = createPaginationParams({ limit: 10, offset: 0 });
       const mockMovies = [mockMovie];
-      
+
       // Mock findAndCount to return the expected result
       repository.findAndCount.mockResolvedValue([mockMovies, 1]);
 
