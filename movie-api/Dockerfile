@@ -19,4 +19,4 @@ COPY . .
 EXPOSE 3000
 
 # Start the application in development mode
-CMD ["pnpm", "run", "start:dev"]
+CMD ["pnpm", "exec", "ts-node", "src/dev-bootstrap.ts"]
