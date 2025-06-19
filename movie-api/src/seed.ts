@@ -22,7 +22,6 @@ async function seedUsers(userRepo: Repository<User>): Promise<User[]> {
   console.log('Seeding users...');
   const result = await userRepo.upsert(userSeeds, ['email']);
   console.log(`Upserted ${result.identifiers.length} users.`);
-  // Fetch all users after upsert
   const users = await userRepo.find();
   return users;
 }
@@ -46,7 +45,6 @@ async function seedMovies(
   actorRepo: Repository<Actor>
 ): Promise<Movie[]> {
   console.log('\nSeeding movies...');
-  // Upsert movies by id
   const result = await movieRepo.upsert(movieSeeds, ['id']);
   console.log(`Upserted ${result.identifiers.length} movies.`);
 
@@ -70,7 +68,6 @@ async function seedRatings(
   ratingRepo: Repository<Rating>,
 ): Promise<void> {
   console.log('\nSeeding ratings...');
-  // Upsert ratings by id
   for (const ratingData of ratingSeeds) {
     await ratingRepo.upsert({ ...ratingData, movie: { id: ratingData.movieId } }, ['id']);
   }
@@ -86,7 +83,6 @@ async function bootstrap() {
       logger: ['error', 'warn']
     });
 
-    // Get repositories
     const actorRepo = app.get<Repository<Actor>>(getRepositoryToken(Actor));
     const movieRepo = app.get<Repository<Movie>>(getRepositoryToken(Movie));
     const ratingRepo = app.get<Repository<Rating>>(getRepositoryToken(Rating));
