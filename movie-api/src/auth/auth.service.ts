@@ -62,7 +62,7 @@ export class AuthService {
       sub: user.id
     };
 
-    const expiresIn = this.configService.get<number>('JWT_EXPIRES_IN');
+    const expiresIn = this.configService.get<string>('JWT_EXPIRES_IN');
     const accessToken = this.jwtService.sign(payload, { expiresIn });
 
     const userResponse: UserResponse = {

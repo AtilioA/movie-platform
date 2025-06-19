@@ -24,8 +24,8 @@ export class AuthResponseDto {
   @ApiProperty({ description: 'User information' })
   user: UserResponse;
 
-  @ApiProperty({ description: 'Token expiration in seconds' })
-  expiresIn: number;
+  @ApiProperty({ description: 'Token expiration time' })
+  expiresIn: string;
 
   constructor(partial: Partial<AuthResponseDto>) {
     Object.assign(this, partial);
