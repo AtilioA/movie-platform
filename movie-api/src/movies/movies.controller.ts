@@ -12,11 +12,12 @@ import {
   Patch,
   ParseUUIDPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, getSchemaPath } from '@nestjs/swagger';
 import { MoviesService } from './movies.service';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 import { MovieResponseDto } from './dto/movie-response.dto';
+import { MovieActorResponseDto } from './dto/movie-actor-response.dto';
 import { PaginationParamsDto } from '../shared/dto/pagination-params.dto';
 import { PaginationResponseDto } from '../shared/dto/pagination-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -71,6 +72,24 @@ export class MoviesController {
   @ApiResponse({ status: 404, description: 'Movie not found' })
   async findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     return this.moviesService.findOneMovie(id);
+  }
+
+  @Public()
+  @Public()
+  @Get(':id/actors')
+  @ApiOperation({ summary: 'Get all actors in a movie' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of actors in the specified movie',
+    type: PaginationResponseDto,
+  })
+  @ApiResponse({ status: 400, description: 'Invalid UUID format' })
+  @ApiResponse({ status: 404, description: 'Movie not found' })
+  async getActorsForMovie(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Query() paginationParams: PaginationParamsDto
+  ) {
+    return this.moviesService.getActorsForMovie(id, paginationParams);
   }
 
   @Post()

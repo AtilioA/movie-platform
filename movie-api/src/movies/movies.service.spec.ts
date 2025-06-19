@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { DeleteResult, ILike } from 'typeorm';
 import { Movie } from './entities/movie.entity';
+import { Actor } from '../actors/entities/actor.entity';
 import { MoviesService } from './movies.service';
 import { createPaginationParams } from '../../test/test-utils';
 import { CreateMovieDto } from './dto/create-movie.dto';
@@ -430,6 +431,91 @@ describe('MoviesService', () => {
 
       await expect(service.updateMovie('999', updateMovieDto)).rejects.toThrow(NotFoundException);
       expect(repository.save).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('getActorsForMovie', () => {
+    it('should return paginated actors for a movie', async () => {
+      const mockActors = [
+        { id: '1', name: 'Actor 1', createdAt: new Date(), updatedAt: new Date(), movies: [] },
+        { id: '2', name: 'Actor 2', createdAt: new Date(), updatedAt: new Date(), movies: [] },
+      ];
+
+      const mockMovie = {
+        id: '1',
+        title: 'Test Movie',
+        actors: mockActors,
+      };
+
+      (repository.findOne as jest.Mock).mockResolvedValue(mockMovie);
+      
+      // Mock the query builder
+      const mockQueryBuilder = {
+        leftJoinAndSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        skip: jest.fn().mockReturnThis(),
+        take: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValue([mockMovie]),
+      };
+      
+      (repository.createQueryBuilder as jest.Mock).mockReturnValue(mockQueryBuilder);
+
+      // Create a proper PaginationParamsDto mock
+      class MockPaginationParamsDto {
+        limit = 10;
+        offset = 0;
+        page = 1;
+        
+        getLimit() {
+          return this.limit;
+        }
+        
+        getOffset() {
+          return this.offset;
+        }
+      }
+
+      const paginationParams = new MockPaginationParamsDto();
+
+      const result = await service.getActorsForMovie('1', paginationParams);
+
+      expect(repository.findOne).toHaveBeenCalledWith({
+        where: { id: '1' },
+        relations: ['actors'],
+      });
+
+      expect(result.items).toHaveLength(2);
+      expect(result.items[0].id).toBe('1');
+      expect(result.items[1].id).toBe('2');
+      expect(result.total).toBe(2);
+      expect(result.page).toBe(1);
+      expect(result.totalPages).toBe(1);
+    });
+
+    it('should throw NotFoundException when movie is not found', async () => {
+      (repository.findOne as jest.Mock).mockResolvedValue(undefined);
+      
+      // Create a proper PaginationParamsDto mock
+      class MockPaginationParamsDto {
+        limit = 10;
+        offset = 0;
+        page = 1;
+        
+        getLimit() {
+          return this.limit;
+        }
+        
+        getOffset() {
+          return this.offset;
+        }
+      }
+      
+      const paginationParams = new MockPaginationParamsDto();
+
+      await expect(service.getActorsForMovie('999', paginationParams)).rejects.toThrow(
+        new NotFoundException('Movie with ID 999 not found')
+      );
     });
   });
 

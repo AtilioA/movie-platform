@@ -57,7 +57,11 @@ export class ActorsService {
     return new ActorResponseDto(actor);
   }
 
-  async getMoviesForActor(actorId: string): Promise<MovieResponseDto[]> {
+  async getMoviesForActor(
+    actorId: string,
+    paginationParams: PaginationParamsDto
+  ): Promise<PaginationResult<MovieResponseDto>> {
+    // First verify the actor exists
     const actor = await this.actorsRepository.findOne({
       where: { id: actorId },
       relations: ['movies'],
@@ -67,12 +71,36 @@ export class ActorsService {
       throw new NotFoundException(`Actor with ID ${actorId} not found`);
     }
 
-    return actor.movies.map(movie => ({
-      id: movie.id,
-      title: movie.title,
-      createdAt: movie.createdAt,
-      updatedAt: movie.updatedAt,
-    }));
+    const limit = paginationParams.getLimit();
+    const offset = paginationParams.getOffset();
+    const page = paginationParams.page || Math.floor(offset / limit) + 1;
+    const total = actor.movies?.length || 0;
+
+    // Get paginated movies for the actor
+    const [items] = await this.actorsRepository
+      .createQueryBuilder('actor')
+      .where('actor.id = :actorId', { actorId })
+      .leftJoinAndSelect('actor.movies', 'movie')
+      .orderBy('movie.title', 'ASC')
+      .skip(offset)
+      .take(limit)
+      .getMany()
+      .then(actors => {
+        const movies = actors[0]?.movies || [];
+        return [movies];
+      });
+
+    return {
+      items: items.map(movie => ({
+        id: movie.id,
+        title: movie.title,
+        createdAt: movie.createdAt,
+        updatedAt: movie.updatedAt,
+      })),
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   async update(id: string, updateActorDto: UpdateActorDto): Promise<ActorResponseDto> {

@@ -12,16 +12,18 @@ import {
   Patch,
   ParseUUIDPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, getSchemaPath } from '@nestjs/swagger';
 import { ActorsService } from './actors.service';
 import { CreateActorDto } from './dto/create-actor.dto';
 import { UpdateActorDto } from './dto/update-actor.dto';
 import { ActorResponseDto } from './dto/actor-response.dto';
+import { MoviesForActorResponseDto } from './dto/movies-for-actor-response.dto';
 import { PaginationParamsDto } from '../shared/dto/pagination-params.dto';
 import { PaginationResponseDto } from '../shared/dto/pagination-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PaginationInterceptor } from '../shared/interceptors/pagination.interceptor';
 import { Public } from '../shared/decorators/public.decorator';
+import { MovieResponseDto } from '../movies/dto/movie-response.dto';
 
 @ApiTags('actors')
 @Controller('actors')
@@ -66,14 +68,29 @@ export class ActorsController {
   @Public()
   @Get(':id')
   @ApiOperation({ summary: 'Get a single actor by ID' })
-  @ApiResponse({
-    status: 200,
-    description: 'Returns the requested actor',
-    type: ActorResponseDto
-  })
+  @ApiResponse({ status: 200, description: 'The actor was found', type: ActorResponseDto })
+  @ApiResponse({ status: 400, description: 'Invalid UUID format' })
   @ApiResponse({ status: 404, description: 'Actor not found' })
   async findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     return this.actorsService.findOne(id);
+  }
+
+  @Public()
+  @Get(':id/movies')
+  @UseInterceptors(PaginationInterceptor)
+  @ApiOperation({ summary: 'Get all movies for an actor with pagination' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns paginated list of movies the actor has been in',
+    type: PaginationResponseDto
+  })
+  @ApiResponse({ status: 400, description: 'Invalid UUID format' })
+  @ApiResponse({ status: 404, description: 'Actor not found' })
+  async getMoviesForActor(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Query() paginationParams: PaginationParamsDto
+  ) {
+    return this.actorsService.getMoviesForActor(id, paginationParams);
   }
 
   @Post()

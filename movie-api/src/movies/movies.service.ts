@@ -79,7 +79,11 @@ export class MoviesService extends BaseService<Movie> {
     return movie;
   }
 
-  async getActorsForMovie(movieId: string): Promise<ActorResponseDto[]> {
+  async getActorsForMovie(
+    movieId: string,
+    paginationParams: PaginationParamsDto
+  ): Promise<PaginationResult<ActorResponseDto>> {
+    // First verify the movie exists
     const movie = await this.movieRepository.findOne({
       where: { id: movieId },
       relations: ['actors'],
@@ -89,7 +93,29 @@ export class MoviesService extends BaseService<Movie> {
       throw new NotFoundException(`Movie with ID ${movieId} not found`);
     }
 
-    return movie.actors.map(actor => new ActorResponseDto(actor));
+    const limit = paginationParams.getLimit();
+    const offset = paginationParams.getOffset();
+    const page = paginationParams.page || Math.floor(offset / limit) + 1;
+    const total = movie.actors?.length || 0;
+
+    // Get paginated actors for the movie
+    const result = await this.movieRepository
+      .createQueryBuilder('movie')
+      .where('movie.id = :movieId', { movieId })
+      .leftJoinAndSelect('movie.actors', 'actor')
+      .orderBy('actor.name', 'ASC')
+      .skip(offset)
+      .take(limit)
+      .getOne();
+
+    const actors = result?.actors || [];
+
+    return {
+      items: actors.map((actor: Actor) => new ActorResponseDto(actor)),
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   async updateMovie(id: string, updateMovieDto: UpdateMovieDto): Promise<Movie> {
