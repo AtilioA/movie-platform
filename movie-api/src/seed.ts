@@ -90,8 +90,10 @@ async function bootstrap() {
     const actorRepo = app.get<Repository<Actor>>(getRepositoryToken(Actor));
     const movieRepo = app.get<Repository<Movie>>(getRepositoryToken(Movie));
     const ratingRepo = app.get<Repository<Rating>>(getRepositoryToken(Rating));
+    const userRepo = app.get<Repository<User>>(getRepositoryToken(User));
 
     // Seed data
+    await seedUsers(userRepo);
     await seedActors(actorRepo);
     await seedMovies(movieRepo, actorRepo);
     await seedRatings(ratingRepo);
