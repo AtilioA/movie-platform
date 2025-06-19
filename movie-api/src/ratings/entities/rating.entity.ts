@@ -1,7 +1,6 @@
 import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { IsNumber, Min, Max, IsString, IsOptional, IsUUID } from 'class-validator';
 import { BaseEntity } from '@app/shared';
-import { User } from '@app/users/entities/user.entity';
 import { Movie } from '@app/movies/entities/movie.entity';
 
 @Entity('ratings')

@@ -11,7 +11,9 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "paths": {
-      "@app/*": ["src/*"]
+      "@app/*": [
+        "src/*"
+      ]
     },
     "incremental": true,
     "skipLibCheck": true,
@@ -22,6 +24,12 @@
     "noFallthroughCasesInSwitch": true,
     "esModuleInterop": true
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src/**/*.ts",
+    "seed.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }
