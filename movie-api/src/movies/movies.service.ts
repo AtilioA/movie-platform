@@ -34,8 +34,10 @@ export class MoviesService extends BaseService<Movie> {
     paginationParams: PaginationParamsDto,
     search?: string,
   ): Promise<PaginationResult<Movie>> {
-    const { limit = 10, offset = 0, sort } = paginationParams;
-    const page = Math.floor(offset / limit) + 1;
+    const { sort } = paginationParams;
+    const limit = paginationParams.getLimit();
+    const offset = paginationParams.getOffset();
+    const page = paginationParams.page || Math.floor(offset / limit) + 1;
 
     const where: FindOptionsWhere<Movie> = {};
 

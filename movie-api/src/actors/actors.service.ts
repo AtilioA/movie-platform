@@ -25,7 +25,8 @@ export class ActorsService {
     paginationParams: PaginationParamsDto,
     search?: string,
   ): Promise<PaginationResult<ActorResponseDto>> {
-    const { limit = 10, offset = 0 } = paginationParams;
+    const limit = paginationParams.getLimit();
+    const offset = paginationParams.getOffset();
     
     const [items, total] = await this.actorsRepository.findAndCount({
       where: search ? { name: ILike(`%${search}%`) } : {},
@@ -80,7 +81,8 @@ export class ActorsService {
     name: string,
     paginationParams: PaginationParamsDto,
   ): Promise<PaginationResult<ActorResponseDto>> {
-    const { limit = 10, offset = 0 } = paginationParams;
+    const limit = paginationParams.getLimit();
+    const offset = paginationParams.getOffset();
     
     const [items, total] = await this.actorsRepository.findAndCount({
       where: { name: ILike(`%${name}%`) },
@@ -92,7 +94,7 @@ export class ActorsService {
     return {
       items: items.map(actor => new ActorResponseDto(actor)),
       total,
-      page: Math.floor(offset / limit) + 1,
+      page: paginationParams.page || Math.floor(offset / limit) + 1,
       totalPages: Math.ceil(total / limit),
     };
   }
