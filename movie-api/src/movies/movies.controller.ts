@@ -44,17 +44,21 @@ export class MoviesController {
   }
 
   @Get('search')
-  @ApiOperation({ summary: 'Search movies by title' })
+  @UseInterceptors(PaginationInterceptor)
+  @ApiOperation({ summary: 'Search movies by title with pagination' })
   @ApiResponse({
     status: 200,
-    description: 'Returns list of movies matching search query',
-    type: [MovieResponseDto]
+    description: 'Returns paginated list of movies matching search query',
+    type: PaginationResponseDto
   })
-  async search(@Query('q') query: string) {
-    if (!query) {
-      return [];
+  async search(
+    @Query('q') query: string,
+    @Query() paginationParams: PaginationParamsDto,
+  ) {
+    if (!query || !query.trim()) {
+      return { items: [], total: 0, page: 1, totalPages: 0 };
     }
-    return this.moviesService.searchMoviesByTitle(query);
+    return this.moviesService.searchMoviesByTitle(query.trim(), paginationParams);
   }
 
   @Get(':id')
