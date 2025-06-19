@@ -7,6 +7,7 @@ import { UpdateActorDto } from './dto/update-actor.dto';
 import { PaginationParamsDto } from '../shared/dto/pagination-params.dto';
 import { PaginationResult } from '../shared/interfaces/pagination-result.interface';
 import { ActorResponseDto } from './dto/actor-response.dto';
+import { MovieResponseDto } from '../movies/dto/movie-response.dto';
 
 @Injectable()
 export class ActorsService {
@@ -54,6 +55,24 @@ export class ActorsService {
     }
     
     return new ActorResponseDto(actor);
+  }
+
+  async getMoviesForActor(actorId: string): Promise<MovieResponseDto[]> {
+    const actor = await this.actorsRepository.findOne({
+      where: { id: actorId },
+      relations: ['movies'],
+    });
+
+    if (!actor) {
+      throw new NotFoundException(`Actor with ID ${actorId} not found`);
+    }
+
+    return actor.movies.map(movie => ({
+      id: movie.id,
+      title: movie.title,
+      createdAt: movie.createdAt,
+      updatedAt: movie.updatedAt,
+    }));
   }
 
   async update(id: string, updateActorDto: UpdateActorDto): Promise<ActorResponseDto> {
