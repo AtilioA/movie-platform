@@ -23,12 +23,4 @@ export class Rating extends BaseEntity {
   @Column({ type: 'uuid' })
   @IsUUID()
   movieId: string;
-
-  // @ManyToOne(() => User, { onDelete: 'CASCADE', nullable: false })
-  // @JoinColumn({ name: 'userId' })
-  // user: User;
-
-  @Column({ type: 'uuid' })
-  @IsUUID()
-  userId: string;
 }

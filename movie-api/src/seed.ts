@@ -1,75 +1,109 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { In, Repository } from 'typeorm';
 
+// Entities
 import { User } from './users/entities/user.entity';
 import { Actor } from './actors/entities/actor.entity';
 import { Movie } from './movies/entities/movie.entity';
 import { Rating } from './ratings/entities/rating.entity';
 
-import { Repository } from 'typeorm';
-
+// Seed data
 import { userSeeds } from './database/seeds/users.seed';
 import { actorSeeds } from './database/seeds/actors.seed';
 import { movieSeeds } from './database/seeds/movies.seed';
 import { ratingSeeds } from './database/seeds/ratings.seed';
 
-async function bootstrap() {
-  const app = await NestFactory.createApplicationContext(AppModule, { logger: false });
-
-  const userRepo = app.get<Repository<User>>(getRepositoryToken(User));
-  const actorRepo = app.get<Repository<Actor>>(getRepositoryToken(Actor));
-  const movieRepo = app.get<Repository<Movie>>(getRepositoryToken(Movie));
-  const ratingRepo = app.get<Repository<Rating>>(getRepositoryToken(Rating));
-
-  // Upsert users
-  const userEntities: User[] = [];
-  for (const u of userSeeds) {
-    let user = await userRepo.findOne({ where: { email: u.email } });
-    if (!user) user = userRepo.create(u);
-    else user = userRepo.merge(user, u);
-    user = await userRepo.save(user);
-    userEntities.push(user);
-  }
-
-  // Upsert actors
-  const actorEntities: Actor[] = [];
-  for (const a of actorSeeds) {
-    let actor = await actorRepo.findOne({ where: { name: a.name } });
-    if (!actor) actor = actorRepo.create(a);
-    else actor = actorRepo.merge(actor, a);
-    actor = await actorRepo.save(actor);
-    actorEntities.push(actor);
-  }
-
-  // Upsert movies (with actors)
-  const movieEntities: Movie[] = [];
-  for (const m of movieSeeds) {
-    let movie = await movieRepo.findOne({ where: { title: m.title }, relations: ['actors'] });
-    if (!movie) movie = movieRepo.create({ title: m.title });
-    else movie = movieRepo.merge(movie, { title: m.title });
-    // Attach actors by name
-    const actorsForMovie = m.actors.map((a: any) => actorEntities.find((ae) => ae.name === a.name));
-    movie.actors = actorsForMovie.filter((a) => a !== undefined) as Actor[];
-    movie = await movieRepo.save(movie);
-    movieEntities.push(movie);
-  }
-
-  // Upsert ratings
-  for (const r of ratingSeeds) {
-    const movie = movieEntities.find((m) => m.title === r.movieTitle);
-    if (!movie) continue;
-    let rating = await ratingRepo.findOne({ where: { movie: { id: movie.id } } });
-    if (!rating) rating = ratingRepo.create({ ...r, movie });
-    else rating = ratingRepo.merge(rating, { ...r, movie });
-    await ratingRepo.save(rating);
-  }
-
-  await app.close();
-  console.log('Seeding complete.');
+/**
+ * Seed users into the database
+ */
+async function seedUsers(userRepo: Repository<User>): Promise<User[]> {
+  console.log('Seeding users...');
+  const result = await userRepo.upsert(userSeeds, ['email']);
+  console.log(`Upserted ${result.identifiers.length} users.`);
+  // Fetch all users after upsert
+  const users = await userRepo.find();
+  return users;
 }
 
-bootstrap().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+/**
+ * Seed actors into the database
+ */
+async function seedActors(actorRepo: Repository<Actor>): Promise<Actor[]> {
+  console.log('\nSeeding actors...');
+  const result = await actorRepo.upsert(actorSeeds, ['id']);
+  console.log(`Upserted ${result.identifiers.length} actors.`);
+  const actors = await actorRepo.find();
+  return actors;
+}
+
+/**
+ * Seed movies and their relationships with actors
+ */
+async function seedMovies(
+  movieRepo: Repository<Movie>,
+  actorRepo: Repository<Actor>
+): Promise<Movie[]> {
+  console.log('\nSeeding movies...');
+  // Upsert movies by id
+  const result = await movieRepo.upsert(movieSeeds, ['id']);
+  console.log(`Upserted ${result.identifiers.length} movies.`);
+
+  // Attach actors to movies (many-to-many)
+  const movies = await movieRepo.find();
+  for (const movieData of movieSeeds) {
+    const movie = movies.find(m => m.id === movieData.id);
+    if (!movie) continue;
+    const actorIds = movieData.actors.map((a: { id: string }) => a.id);
+    const movieActors = await actorRepo.findBy({ id: In(actorIds) });
+    movie.actors = movieActors;
+    await movieRepo.save(movie);
+  }
+  return await movieRepo.find({ relations: ['actors'] });
+}
+
+/**
+ * Seed ratings for movies
+ */
+async function seedRatings(
+  ratingRepo: Repository<Rating>,
+): Promise<void> {
+  console.log('\nSeeding ratings...');
+  // Upsert ratings by id
+  for (const ratingData of ratingSeeds) {
+    await ratingRepo.upsert({ ...ratingData, movie: { id: ratingData.movieId } }, ['id']);
+  }
+  console.log('Upserted ratings.');
+}
+
+/**
+ * Main seeding function
+ */
+async function bootstrap() {
+  try {
+    const app = await NestFactory.createApplicationContext(AppModule, {
+      logger: ['error', 'warn']
+    });
+
+    // Get repositories
+    const actorRepo = app.get<Repository<Actor>>(getRepositoryToken(Actor));
+    const movieRepo = app.get<Repository<Movie>>(getRepositoryToken(Movie));
+    const ratingRepo = app.get<Repository<Rating>>(getRepositoryToken(Rating));
+
+    // Seed data
+    await seedActors(actorRepo);
+    await seedMovies(movieRepo, actorRepo);
+    await seedRatings(ratingRepo);
+
+    await app.close();
+    console.log('\n✅ Seeding completed successfully!');
+    process.exit(0);
+  } catch (error) {
+    console.error('❌ Seeding failed:', error);
+    process.exit(1);
+  }
+}
+
+// Start the seeding process
+bootstrap();
