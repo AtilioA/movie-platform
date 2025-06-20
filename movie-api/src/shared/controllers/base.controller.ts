@@ -21,9 +21,11 @@ import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Request } from 'express';
 
 export class BaseController<T extends BaseEntity> {
-  protected readonly logger = new Logger(this.constructor.name);
+  protected readonly logger = new Logger(this.constructor.name, { timestamp: true });
   
-  constructor(private readonly baseService: BaseService<T>) {}
+  constructor(private readonly baseService: BaseService<T>) {
+    this.logger.log('Initializing controller');
+  }
 
   @Get()
   @UseGuards(JwtAuthGuard)

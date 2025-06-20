@@ -4,12 +4,10 @@ import { SwaggerModule } from '@nestjs/swagger';
 import { createSwaggerConfig } from './config/swagger.config';
 import { VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Logger } from './shared/logger/logger.service';
+import { Logger } from '@nestjs/common';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    logger: new Logger('NestApplication'),
-  });
+  const app = await NestFactory.create(AppModule);
 
   const configService = app.get(ConfigService);
   const logger = new Logger('Bootstrap');
@@ -46,7 +44,7 @@ async function bootstrap() {
 }
 
 bootstrap().catch(error => {
-  const logger = new Logger('Bootstrap');
+  const logger = new Logger('Bootstrap', { timestamp: true });
   logger.error('Error during bootstrap', error);
   process.exit(1);
 });
