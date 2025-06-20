@@ -11,8 +11,10 @@ import {
   UseGuards,
   HttpStatus,
   HttpCode,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { PaginationInterceptor } from '../shared/interceptors/pagination.interceptor';
 import { RatingsService } from './ratings.service';
 import { CreateRatingDto } from './dto/create-rating.dto';
 import { UpdateRatingDto } from './dto/update-rating.dto';
@@ -20,6 +22,8 @@ import { RatingQueryDto } from './dto/rating-query.dto';
 import { Rating } from './entities/rating.entity';
 import { PaginationResult } from '../shared/interfaces/pagination-result.interface';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { PaginationParamsDto } from '../shared/dto/pagination-params.dto';
+import { Public } from 'src/shared/decorators/public.decorator';
 
 @ApiTags('ratings')
 @Controller('ratings')
@@ -37,24 +41,41 @@ export class RatingsController {
     return this.ratingsService.create(createRatingDto);
   }
 
+  @Public()
   @Get()
-  @ApiOperation({ summary: 'Get all ratings with optional filtering' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Return a list of ratings.', type: [Rating] })
-  async findAll(@Query() query: RatingQueryDto): Promise<PaginationResult<Rating>> {
-    return this.ratingsService.findAll(query);
+  @UseInterceptors(PaginationInterceptor)
+  @ApiOperation({ summary: 'Get all ratings with optional filtering and pagination' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Return a paginated list of ratings.',
+    type: Rating,
+  })
+  async findAll(
+    @Query() paginationParams: PaginationParamsDto,
+    @Query() query: RatingQueryDto,
+  ): Promise<PaginationResult<Rating>> {
+    return this.ratingsService.findAll({ ...paginationParams, ...query });
   }
 
+  @Public()
   @Get('movie/:movieId')
-  @ApiOperation({ summary: 'Get ratings for a specific movie' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Return ratings for the specified movie.', type: [Rating] })
+  @UseInterceptors(PaginationInterceptor)
+  @ApiOperation({ summary: 'Get ratings for a specific movie with pagination' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Return paginated ratings for the specified movie.',
+    type: Rating,
+  })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Movie not found.' })
   async findByMovieId(
     @Param('movieId', new ParseUUIDPipe({ version: '4' })) movieId: string,
+    @Query() paginationParams: PaginationParamsDto,
     @Query() query: Omit<RatingQueryDto, 'movieId'>,
   ): Promise<PaginationResult<Rating>> {
-    return this.ratingsService.findAll({ ...query, movieId });
+    return this.ratingsService.findAll({ ...paginationParams, ...query, movieId });
   }
 
+  @Public()
   @Get(':id')
   @ApiOperation({ summary: 'Get a rating by ID' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Return the rating with the specified ID.', type: Rating })
