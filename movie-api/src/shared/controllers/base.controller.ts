@@ -33,7 +33,7 @@ export class BaseController<T extends BaseEntity> {
   @ApiOperation({ summary: 'Get item by id' })
   @ApiResponse({ status: 200, description: 'Return item by id.' })
   @ApiResponse({ status: 404, description: 'Item not found.' })
-  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<T> {
+  async findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string): Promise<T> {
     return this.baseService.findOne(id);
   }
 
@@ -57,7 +57,7 @@ export class BaseController<T extends BaseEntity> {
   @ApiResponse({ status: 200, description: 'The item has been successfully updated.' })
   @ApiResponse({ status: 404, description: 'Item not found.' })
   async update(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() entity: any,
   ): Promise<T> {
     return this.baseService.update(id, entity);
@@ -70,7 +70,7 @@ export class BaseController<T extends BaseEntity> {
   @ApiOperation({ summary: 'Delete item' })
   @ApiResponse({ status: 204, description: 'The item has been successfully deleted.' })
   @ApiResponse({ status: 404, description: 'Item not found.' })
-  async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+  async remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string): Promise<void> {
     return this.baseService.remove(id);
   }
 }

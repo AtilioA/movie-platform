@@ -49,7 +49,7 @@ export class RatingsController {
   @ApiResponse({ status: HttpStatus.OK, description: 'Return ratings for the specified movie.', type: [Rating] })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Movie not found.' })
   async findByMovieId(
-    @Param('movieId', ParseUUIDPipe) movieId: string,
+    @Param('movieId', new ParseUUIDPipe({ version: '4' })) movieId: string,
     @Query() query: Omit<RatingQueryDto, 'movieId'>,
   ): Promise<PaginationResult<Rating>> {
     return this.ratingsService.findAll({ ...query, movieId });
@@ -59,7 +59,7 @@ export class RatingsController {
   @ApiOperation({ summary: 'Get a rating by ID' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Return the rating with the specified ID.', type: Rating })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Rating not found.' })
-  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Rating> {
+  async findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string): Promise<Rating> {
     return this.ratingsService.findOne(id);
   }
 
@@ -72,7 +72,7 @@ export class RatingsController {
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Invalid input.' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized.' })
   async update(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateRatingDto: UpdateRatingDto,
   ): Promise<Rating> {
     return this.ratingsService.update(id, updateRatingDto);
@@ -86,7 +86,7 @@ export class RatingsController {
   @ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'The rating has been successfully deleted.' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Rating not found.' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized.' })
-  async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+  async remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string): Promise<void> {
     return this.ratingsService.remove(id);
   }
 }
