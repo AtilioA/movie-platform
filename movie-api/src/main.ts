@@ -4,10 +4,15 @@ import { SwaggerModule } from '@nestjs/swagger';
 import { createSwaggerConfig } from './config/swagger.config';
 import { VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Logger } from './shared/logger/logger.service';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: new Logger('NestApplication'),
+  });
+
   const configService = app.get(ConfigService);
+  const logger = new Logger('Bootstrap');
 
   // Set api prefix for all routes
   const apiVersion = configService.get<string>('API_VERSION', '1');
@@ -23,7 +28,7 @@ async function bootstrap() {
   // Swagger setup
   const swaggerConfig = createSwaggerConfig(configService);
   const document = SwaggerModule.createDocument(app, swaggerConfig);
-  const swaggerPath = configService.get<string>('SWAGGER_PATH', '/docs');
+  const swaggerPath = '/api/docs';
 
   SwaggerModule.setup(swaggerPath, app, document, {
     swaggerOptions: {
@@ -31,11 +36,17 @@ async function bootstrap() {
     },
   });
 
-  await app.listen(process.env.PORT ?? 3000);
+  const port = configService.get<number>('PORT', 3000);
+  await app.listen(port);
 
-  const baseUrl = await app.getUrl();
-  console.log(`Application is running on: ${baseUrl}`);
-  console.log(`Swagger docs available at: ${baseUrl}${swaggerPath}`);
+  logger.log(`Application is running on: http://localhost:${port}`);
+  logger.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  logger.log(`API Version: ${apiVersion}`);
+  logger.log(`Swagger documentation available at: http://localhost:${port}${swaggerPath}`);
 }
 
-bootstrap();
+bootstrap().catch(error => {
+  const logger = new Logger('Bootstrap');
+  logger.error('Error during bootstrap', error);
+  process.exit(1);
+});

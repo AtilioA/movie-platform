@@ -8,7 +8,11 @@ import {
   Req,
   UnauthorizedException,
   HttpCode,
-  HttpStatus
+  HttpStatus,
+  Logger,
+  ConflictException,
+  BadRequestException,
+  InternalServerErrorException
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
@@ -22,6 +26,8 @@ import { Public } from '../shared/decorators/public.decorator';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
+
   constructor(private readonly authService: AuthService) {}
 
   @Public()
@@ -39,7 +45,19 @@ export class AuthController {
     description: 'Invalid credentials'
   })
   async login(@Body() loginDto: LoginDto): Promise<AuthResponseDto> {
-    return this.authService.login(loginDto);
+    this.logger.log(`Login attempt for email: ${loginDto.email}`);
+    try {
+      const result = await this.authService.login(loginDto);
+      this.logger.log(`Successful login for user: ${loginDto.email}`);
+      return result;
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        this.logger.warn(`Failed login attempt for email: ${loginDto.email}`);
+        throw error;
+      }
+      this.logger.error(`Login error for ${loginDto.email}: ${error.message}`, error.stack);
+      throw new InternalServerErrorException('Login failed');
+    }
   }
 
   @Public()
@@ -57,7 +75,19 @@ export class AuthController {
     description: 'Email already in use'
   })
   async register(@Body() registerDto: RegisterDto): Promise<AuthResponseDto> {
-    return this.authService.register(registerDto);
+    this.logger.log(`Registration attempt for email: ${registerDto.email}`);
+    try {
+      const result = await this.authService.register(registerDto);
+      this.logger.log(`User registered successfully: ${registerDto.email}`);
+      return result;
+    } catch (error) {
+      if (error instanceof ConflictException || error instanceof BadRequestException) {
+        this.logger.warn(`Registration failed for ${registerDto.email}: ${error.message}`);
+        throw error;
+      }
+      this.logger.error(`Registration error for ${registerDto.email}: ${error.message}`, error.stack);
+      throw new InternalServerErrorException('Registration failed');
+    }
   }
 
   @UseGuards(JwtAuthGuard)
@@ -66,17 +96,27 @@ export class AuthController {
   @ApiOperation({ summary: 'Get user profile' })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'User profile retrieved successfully',
-    type: UserResponse
+    description: 'Returns the authenticated user\'s profile',
+    type: UserResponse,
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
-    description: 'Unauthorized'
+    description: 'Unauthorized',
   })
-  async getProfile(@Req() req: any): Promise<UserResponse> {
-    if (!req.user) {
-      throw new UnauthorizedException('User not authenticated');
+  getProfile(@Req() req: any) {
+    this.logger.log(`Fetching profile for user ID: ${req.user?.userId}`);
+    try {
+      // The JWT guard has already verified the token and attached the user
+      if (!req.user) {
+        this.logger.warn('Unauthorized profile access attempt');
+        throw new UnauthorizedException('User not authenticated');
+      }
+      this.logger.debug(`Profile data retrieved for user ID: ${req.user.userId}`);
+      return req.user;
+    } catch (error) {
+      if (error instanceof UnauthorizedException) throw error;
+      this.logger.error(`Error fetching profile: ${error.message}`, error.stack);
+      throw new InternalServerErrorException('Failed to fetch profile');
     }
-    return this.authService.getProfile(req.user.sub);
   }
 }
