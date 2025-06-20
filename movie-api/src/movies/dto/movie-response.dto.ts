@@ -8,6 +8,10 @@ export class MovieActorDto {
 
   @ApiProperty({ description: 'The name of the actor' })
   name: string;
+
+  constructor(partial: Partial<MovieActorDto>) {
+    Object.assign(this, partial);
+  }
 }
 
 export class MovieRatingDto {
@@ -18,12 +22,12 @@ export class MovieRatingDto {
   @ApiProperty({ description: 'The rating score' })
   score: number;
 
-  @ApiProperty({ description: 'The ID of the user who created the rating' })
-  @IsUUID()
-  userId: string;
-
   @ApiProperty({ description: 'The date when the rating was created' })
   createdAt: Date;
+
+  constructor(partial: Partial<MovieRatingDto>) {
+    Object.assign(this, partial);
+  }
 }
 
 export class MovieResponseDto {
@@ -34,17 +38,17 @@ export class MovieResponseDto {
   @ApiProperty({ description: 'The title of the movie' })
   title: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'The actors in the movie',
     type: [MovieActorDto],
-    required: false 
+    required: false,
   })
   actors?: MovieActorDto[];
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'The ratings for the movie',
     type: [MovieRatingDto],
-    required: false 
+    required: false,
   })
   ratings?: MovieRatingDto[];
 
@@ -53,4 +57,20 @@ export class MovieResponseDto {
 
   @ApiProperty({ description: 'The date when the movie was last updated' })
   updatedAt: Date;
+
+  constructor(movie: Partial<MovieResponseDto>) {
+    Object.assign(this, movie);
+
+    if (movie && movie.actors) {
+      this.actors = movie.actors.map(
+        (actor: any) => new MovieActorDto(actor)
+      );
+    }
+
+    if (movie && movie.ratings) {
+      this.ratings = movie.ratings.map(
+        (rating: any) => new MovieRatingDto(rating)
+      );
+    }
+  }
 }

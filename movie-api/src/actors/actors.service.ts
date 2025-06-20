@@ -6,14 +6,18 @@ import { CreateActorDto } from './dto/create-actor.dto';
 import { UpdateActorDto } from './dto/update-actor.dto';
 import { PaginationParamsDto } from '../shared/dto/pagination-params.dto';
 import { PaginationResult } from '../shared/interfaces/pagination-result.interface';
+import { PaginationResponseDto } from '../shared/dto/pagination-response.dto';
 import { ActorResponseDto } from './dto/actor-response.dto';
 import { MovieResponseDto } from '../movies/dto/movie-response.dto';
+import { Movie } from '../movies/entities/movie.entity';
 
 @Injectable()
 export class ActorsService {
   constructor(
     @InjectRepository(Actor)
     private readonly actorsRepository: Repository<Actor>,
+    @InjectRepository(Movie)
+    private readonly moviesRepository: Repository<Movie>,
   ) {}
 
   async create(createActorDto: CreateActorDto): Promise<ActorResponseDto> {
@@ -28,7 +32,7 @@ export class ActorsService {
   ): Promise<PaginationResult<ActorResponseDto>> {
     const limit = paginationParams.getLimit();
     const offset = paginationParams.getOffset();
-    
+
     const [items, total] = await this.actorsRepository.findAndCount({
       where: search ? { name: ILike(`%${search}%`) } : {},
       take: limit,
@@ -45,63 +49,49 @@ export class ActorsService {
   }
 
   async findOne(id: string): Promise<ActorResponseDto> {
-    const actor = await this.actorsRepository.findOne({ 
+    const actor = await this.actorsRepository.findOne({
       where: { id },
       relations: ['movies'],
     });
-    
+
     if (!actor) {
       throw new NotFoundException(`Actor with ID ${id} not found`);
     }
-    
+
     return new ActorResponseDto(actor);
   }
 
   async getMoviesForActor(
     actorId: string,
     paginationParams: PaginationParamsDto
-  ): Promise<PaginationResult<MovieResponseDto>> {
-    // First verify the actor exists
-    const actor = await this.actorsRepository.findOne({
-      where: { id: actorId },
-      relations: ['movies'],
-    });
-
-    if (!actor) {
+  ): Promise<PaginationResponseDto<MovieResponseDto>> {
+    // First verify the actor exists (to return 404 if needed)
+    // Could be optimized, but this is simpler
+    const exists = await this.actorsRepository.count({ where: { id: actorId } });
+    if (!exists) {
       throw new NotFoundException(`Actor with ID ${actorId} not found`);
     }
 
     const limit = paginationParams.getLimit();
     const offset = paginationParams.getOffset();
-    const page = paginationParams.page || Math.floor(offset / limit) + 1;
-    const total = actor.movies?.length || 0;
 
-    // Get paginated movies for the actor
-    const [items] = await this.actorsRepository
-      .createQueryBuilder('actor')
-      .where('actor.id = :actorId', { actorId })
-      .leftJoinAndSelect('actor.movies', 'movie')
+    const [movies, total] = await this.moviesRepository
+      .createQueryBuilder('movie')
+      .innerJoin('movie.actors', 'actor', 'actor.id = :actorId', { actorId })
       .orderBy('movie.title', 'ASC')
       .skip(offset)
       .take(limit)
-      .getMany()
-      .then(actors => {
-        const movies = actors[0]?.movies || [];
-        return [movies];
-      });
+      .getManyAndCount();
 
-    return {
-      items: items.map(movie => ({
-        id: movie.id,
-        title: movie.title,
-        createdAt: movie.createdAt,
-        updatedAt: movie.updatedAt,
-      })),
+    const movieDtos = movies.map((m) => new MovieResponseDto(m));
+
+    return new PaginationResponseDto<MovieResponseDto>(movieDtos, {
       total,
-      page,
-      totalPages: Math.ceil(total / limit),
-    };
+      limit,
+      offset,
+    });
   }
+
 
   async update(id: string, updateActorDto: UpdateActorDto): Promise<ActorResponseDto> {
     const actor = await this.actorsRepository.preload({
@@ -130,7 +120,7 @@ export class ActorsService {
   ): Promise<PaginationResult<ActorResponseDto>> {
     const limit = paginationParams.getLimit();
     const offset = paginationParams.getOffset();
-    
+
     const [items, total] = await this.actorsRepository.findAndCount({
       where: { name: ILike(`%${name}%`) },
       take: limit,

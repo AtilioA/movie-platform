@@ -8,6 +8,7 @@ import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 import { PaginationParamsDto } from '../shared/dto/pagination-params.dto';
 import { PaginationResult } from '../shared/interfaces/pagination-result.interface';
+import { PaginationResponseDto } from '../shared/dto/pagination-response.dto';
 import { ActorResponseDto } from '../actors/dto/actor-response.dto';
 
 @Injectable()
@@ -15,6 +16,8 @@ export class MoviesService extends BaseService<Movie> {
   constructor(
     @InjectRepository(Movie)
     private readonly movieRepository: Repository<Movie>,
+    @InjectRepository(Actor)
+    private readonly actorsRepository: Repository<Actor>,
   ) {
     super(movieRepository);
   }
@@ -82,40 +85,31 @@ export class MoviesService extends BaseService<Movie> {
   async getActorsForMovie(
     movieId: string,
     paginationParams: PaginationParamsDto
-  ): Promise<PaginationResult<ActorResponseDto>> {
-    // First verify the movie exists
-    const movie = await this.movieRepository.findOne({
-      where: { id: movieId },
-      relations: ['actors'],
-    });
-
-    if (!movie) {
+  ): Promise<PaginationResponseDto<ActorResponseDto>> {
+    // First verify the movie exists (404 if not)
+    const exists = await this.movieRepository.count({ where: { id: movieId } });
+    if (!exists) {
       throw new NotFoundException(`Movie with ID ${movieId} not found`);
     }
 
     const limit = paginationParams.getLimit();
     const offset = paginationParams.getOffset();
-    const page = paginationParams.page || Math.floor(offset / limit) + 1;
-    const total = movie.actors?.length || 0;
 
-    // Get paginated actors for the movie
-    const result = await this.movieRepository
-      .createQueryBuilder('movie')
-      .where('movie.id = :movieId', { movieId })
-      .leftJoinAndSelect('movie.actors', 'actor')
+    const [actors, total] = await this.actorsRepository
+      .createQueryBuilder('actor')
+      .innerJoin('actor.movies', 'movie', 'movie.id = :movieId', { movieId })
       .orderBy('actor.name', 'ASC')
       .skip(offset)
       .take(limit)
-      .getOne();
+      .getManyAndCount();
 
-    const actors = result?.actors || [];
+    const actorDtos = actors.map((a: Actor) => new ActorResponseDto(a));
 
-    return {
-      items: actors.map((actor: Actor) => new ActorResponseDto(actor)),
+    return new PaginationResponseDto<ActorResponseDto>(actorDtos, {
       total,
-      page,
-      totalPages: Math.ceil(total / limit),
-    };
+      limit,
+      offset,
+    });
   }
 
   async updateMovie(id: string, updateMovieDto: UpdateMovieDto): Promise<Movie> {
