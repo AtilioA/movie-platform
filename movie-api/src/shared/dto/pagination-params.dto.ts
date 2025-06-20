@@ -41,7 +41,7 @@ export class PaginationParamsDto {
   }
 
   @IsOptional()
-  search?: string;
+  q?: string;
 }
 
 export class PaginationMetaDto {
