@@ -2,27 +2,16 @@ import { notFound } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { getActorById } from '@/mock/actors';
 
-// Mock data - will be replaced with actual API call
+// Get actor data from our mock data
 async function getActor(id: string) {
+  // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 100));
-
-  const actors = [
-    {
-      id: '1',
-      name: 'Leonardo DiCaprio',
-      movies: [
-        { id: 1, title: 'Inception', year: 2010, },
-        { id: 2, title: 'The Revenant', year: 2015, },
-        { id: 3, title: 'The Wolf of Wall Street', year: 2013, },
-        { id: 4, title: 'Titanic', year: 1997, },
-      ]
-    },
-  ];
-
-  const actor = actors.find(actor => actor.id === id);
+  
+  const actor = getActorById(id);
   if (!actor) return null;
-
+  
   return actor;
 }
 
@@ -52,6 +41,21 @@ export default async function ActorDetailPage({ params }: { params: { id: string
 
             <div className="mt-4 space-y-2">
               <div className="text-muted-foreground">
+                {actor.movies.length} {actor.movies.length === 1 ? 'movie' : 'movies'}
+              </div>
+              
+              <div className="mt-6">
+                <h2 className="text-xl font-semibold mb-4">Movies</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  {actor.movies.map((movie) => (
+                    <div key={movie.id} className="p-4 border rounded-lg hover:bg-accent/50 transition-colors">
+                      <h3 className="font-medium">{movie.title}</h3>
+                      {movie.year && (
+                        <p className="text-sm text-muted-foreground">{movie.year}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>

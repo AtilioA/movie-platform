@@ -8,8 +8,6 @@ export const mockMovies = [
       { id: '2', name: 'Ator B' },
       { id: '3', name: 'Ator C' },
       { id: '4', name: 'Ator D' },
-      { id: '5', name: 'Ator E' },
-      { id: '6', name: 'Ator F' },
     ],
   },
   {
@@ -17,10 +15,10 @@ export const mockMovies = [
     title: 'The Matrix',
     rating: 8.7,
     actors: [
-      { id: '1', name: 'Keanu Reeves' },
-      { id: '2', name: 'Laurence Fishburne' },
-      { id: '3', name: 'Carrie-Anne Moss' },
-      { id: '4', name: 'Hugo Weaving' },
+      { id: '5', name: 'Keanu Reeves' },
+      { id: '6', name: 'Laurence Fishburne' },
+      { id: '7', name: 'Carrie-Anne Moss' },
+      { id: '8', name: 'Hugo Weaving' },
     ],
   },
   {
@@ -28,10 +26,10 @@ export const mockMovies = [
     title: 'Interstellar',
     rating: 8.6,
     actors: [
-      { id: '1', name: 'Matthew McConaughey' },
-      { id: '2', name: 'Anne Hathaway' },
-      { id: '3', name: 'Jessica Chastain' },
-      { id: '4', name: 'Michael Caine' },
+      { id: '9', name: 'Matthew McConaughey' },
+      { id: '10', name: 'Anne Hathaway' },
+      { id: '11', name: 'Jessica Chastain' },
+      { id: '12', name: 'Michael Caine' },
     ],
   },
   {

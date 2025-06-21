@@ -1,23 +1,19 @@
 "use client"
 
 import { Button } from '@/components/ui/button';
-
 import { SearchSection } from '@/components/ui/search-section';
-
 import { ActorCard } from "@/components/actor/actor-card";
 import { PageHeader } from '@/components/ui/page-header';
-
 import { useState } from 'react';
+import { getAllActors } from '@/mock/actors';
 
 export default function ActorsPage() {
-  // Mock data - will be replaced with actual API calls
-  const actors = Array(12).fill(0).map((_, i) => ({
-    id: i + 1,
-    name: `Actor ${String.fromCharCode(65 + i)}`,
-    movieCount: Math.floor(Math.random() * 30) + 5,
-  }));
-
   const [query, setQuery] = useState('');
+  const actors = getAllActors().map(actor => ({
+    id: actor.id,
+    name: actor.name,
+    movieCount: actor.movies.length,
+  }));
   const filteredActors = actors.filter(actor =>
     actor.name.toLowerCase().includes(query.toLowerCase())
   );
@@ -32,12 +28,10 @@ export default function ActorsPage() {
         placeholder="Search actors..."
         value={query}
         onChange={e => setQuery(e.target.value)}
-        className="mb-8"
-        cardHeaderClassName="pb-4"
       />
 
       {/* Actors Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+      <div className="mt-6 grid gap-4 sm:gap-5 md:gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {filteredActors.map((actor) => (
           <ActorCard
             key={actor.id}
