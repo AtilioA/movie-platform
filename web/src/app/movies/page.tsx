@@ -1,14 +1,14 @@
 "use client"
 
-import { InputWithIcon } from '@/components/ui/input-with-icon';
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Filter, Search, SlidersHorizontal, Star } from 'lucide-react';
-import Link from 'next/link';
+import { Card, CardHeader } from '@/components/ui/card';
 import { MovieCard } from '@/components/movie/movie-card';
+import { SearchInput } from '@/components/ui/search-input';
+import { useState } from 'react';
 
 export default function MoviesPage() {
+  const [query, setQuery] = useState('');
+
   // Mock data - will be replaced with actual API calls
   const movies = Array(12).fill(0).map((_, i) => ({
     id: i + 1,
@@ -19,6 +19,11 @@ export default function MoviesPage() {
       name: `Actor ${j + 1}`,
     })),
   }));
+
+  // Replace with proper search logic with debouncing and back-end
+  const filteredMovies = movies.filter(movie =>
+    movie.title.toLowerCase().includes(query.toLowerCase())
+  );
 
   return (
     <main className="mx-auto px-4 py-8">
@@ -35,12 +40,11 @@ export default function MoviesPage() {
         <Card>
           <CardHeader className="pb-4">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="relative flex-1 max-w-full flex-col">
-                <InputWithIcon
-                  icon={<Search />}
-                  type="text"
-                  placeholder="Search"
-                  className="peer block w-full rounded-md border py-[9px] pl-10 text-sm"
+              <div className="relative flex-1 max-w-full">
+                <SearchInput
+                  placeholder="Search actors..."
+                  value={query}
+                  onChange={e => setQuery(e.target.value)}
                 />
               </div>
             </div>
@@ -50,7 +54,7 @@ export default function MoviesPage() {
 
       {/* Movies Grid */}
       <div className="mt-6 grid gap-4 sm:gap-5 md:gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {movies.map((movie) => (
+        {filteredMovies.map((movie) => (
           <MovieCard
             key={movie.id}
             id={movie.id}
@@ -61,7 +65,7 @@ export default function MoviesPage() {
         ))}
       </div>
 
-      {/* Pagination */}
+      {/* Pagination (replace with hook and component) */}
       <div className="mt-12 flex justify-center">
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" disabled>
