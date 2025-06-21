@@ -2,14 +2,14 @@ import Link from "next/link";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 
 export interface ActorCardProps {
-  id: string;
+  id: number | string;
   name: string;
   movieCount?: number;
   href?: string; // Optional link to actor detail
 }
 
 export function ActorCard({ id, name, movieCount, href }: ActorCardProps) {
-  // Show initials 
+  // Show initials
   const initials = name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
   const content = (
     <Card className="h-full overflow-hidden transition-all hover:shadow-lg text-center">

@@ -1,24 +1,13 @@
 import { notFound } from 'next/navigation';
 import { Star } from "lucide-react";
 import { ActorCard } from "@/components/actor/actor-card";
-import { Card } from '@/components/ui/card';
 
-// Mock data - will be replaced with actual API call
+import { mockMovies } from '@/mock/movies';
+
 async function getMovieById(id: string) {
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 1000));
-  const movies = [
-    {
-      id: '1',
-      title: 'Inception',
-      rating: 8.8,
-      actors: Array.from({ length: 6 }, (_, i) => ({
-        id: `${i + 1}`,
-        name: `Ator ${String.fromCharCode(65 + i)}`,
-      })),
-    },
-  ];
-  const movie = movies.find(movie => movie.id === id);
+  const movie = mockMovies.find(movie => movie.id === id);
   if (!movie) return null;
   return movie;
 }
@@ -44,7 +33,7 @@ export default async function MovieDetailPage({ params }: { params: Promise<{ id
           <h2 className="text-2xl font-semibold mb-4">Cast</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {actors.map((actor: { id: string; name: string }) => (
-              <ActorCard key={actor.id} id={actor.id} name={actor.name} />
+              <ActorCard key={actor.id} id={Number(actor.id)} name={actor.name} />
             ))}
           </div>
         </div>

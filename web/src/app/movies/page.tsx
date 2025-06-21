@@ -8,22 +8,14 @@ import { MovieCard } from '@/components/movie/movie-card';
 import { PageHeader } from '@/components/ui/page-header';
 import { useState } from 'react';
 
+import { mockMovies } from '@/mock/movies';
+
 export default function MoviesPage() {
   const [query, setQuery] = useState('');
-
-  // Mock data - will be replaced with actual API calls
-  const movies = Array(12).fill(0).map((_, i) => ({
-    id: i + 1,
-    title: `Movie Title ${i + 1}`,
-    rating: (Math.random() * 10).toFixed(1),
-    actors: Array(Math.floor(Math.random() * 5) + 2).fill(0).map((_, j) => ({
-      id: j + 1,
-      name: `Actor ${j + 1}`,
-    })),
-  }));
+  const movies = mockMovies;
 
   // Replace with proper search logic with debouncing and back-end
-  const filteredMovies = movies.filter(movie =>
+  const filteredMovies = movies.filter((movie: { title: string }) =>
     movie.title.toLowerCase().includes(query.toLowerCase())
   );
 
@@ -44,10 +36,13 @@ export default function MoviesPage() {
         {filteredMovies.map((movie) => (
           <MovieCard
             key={movie.id}
-            id={movie.id}
+            id={Number(movie.id)}
             name={movie.title}
             rating={Number(movie.rating)}
-            actors={movie.actors}
+            actors={movie.actors.map(actor => ({
+              id: Number(actor.id),
+              name: actor.name,
+            }))}
           />
         ))}
       </div>
