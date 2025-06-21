@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
+import Container from "@/components/ui/container";
 import { AppProvider } from "@/providers/app-provider";
 
 const inter = Inter({
@@ -27,7 +28,9 @@ export default function RootLayout({
           <div className="flex flex-col">
             <Header />
             <main className="flex-1">
-              {children}
+              <Container>
+                {children}
+              </Container>
             </main>
           </div>
         </AppProvider>
