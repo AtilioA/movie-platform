@@ -33,7 +33,11 @@ export default async function MovieDetailPage({ params }: { params: Promise<{ id
           <h2 className="text-2xl font-semibold mb-4">Cast</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {actors.map((actor: { id: string; name: string }) => (
-              <ActorCard key={actor.id} id={Number(actor.id)} name={actor.name} />
+              <ActorCard 
+                key={actor.id} 
+                id={actor.id} 
+                name={actor.name}
+              />
             ))}
           </div>
         </div>
