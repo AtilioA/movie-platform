@@ -46,7 +46,7 @@ export function MovieCard({
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
             <h3 className="text-lg font-semibold line-clamp-2 group-hover:text-primary transition-colors">
-              <Link href={`/movies/${id}`} className="text-xs text-red-500 hover:underline focus:underline">
+              <Link href={`/movies/${id}`} className="text-lg text-red-500 hover:underline focus:underline">
                 {name}
               </Link>
             </h3>
