@@ -14,7 +14,7 @@ export const SearchSection: React.FC<SearchSectionProps> = ({
   placeholder,
   value,
   onChange,
-  className = "my-2",
+  className = "my-2 mb-6",
   cardHeaderClassName = "py-4",
 }) => (
   <div className={className}>
