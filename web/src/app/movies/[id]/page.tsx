@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
-import { Star } from 'lucide-react';
+import { Star } from "lucide-react";
+import { ActorCard } from "@/components/actor/actor-card";
 import { Card } from '@/components/ui/card';
 
 // Mock data - will be replaced with actual API call
@@ -43,14 +44,7 @@ export default async function MovieDetailPage({ params }: { params: Promise<{ id
           <h2 className="text-2xl font-semibold mb-4">Cast</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {actors.map((actor: { id: string; name: string }) => (
-              <Card key={actor.id} className="flex flex-col items-center p-4">
-                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center text-2xl font-bold mb-2">
-                  {actor.name.charAt(5)}
-                </div>
-                <div className="text-center">
-                  <div className="font-medium">{actor.name}</div>
-                </div>
-              </Card>
+              <ActorCard key={actor.id} id={actor.id} name={actor.name} />
             ))}
           </div>
         </div>
