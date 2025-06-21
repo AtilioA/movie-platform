@@ -1,103 +1,154 @@
-import Image from "next/image";
+"use client"
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { MovieCard } from '@/components/movie/movie-card';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  // Mock data for featured movies with actors
+  const featuredMovies = [
+    {
+      id: 1,
+      name: 'Inception',
+      rating: 8.8,
+      actors: [
+        { id: 101, name: 'Leonardo DiCaprio' },
+        { id: 102, name: 'Joseph Gordon-Levitt' },
+        { id: 103, name: 'Ellen Page' },
+        { id: 104, name: 'Tom Hardy' },
+      ],
+    },
+    {
+      id: 2,
+      name: 'The Shawshank Redemption',
+      rating: 9.3,
+      actors: [
+        { id: 201, name: 'Tim Robbins' },
+        { id: 202, name: 'Morgan Freeman' },
+        { id: 203, name: 'Bob Gunton' },
+      ],
+    },
+    {
+      id: 3,
+      name: 'The Dark Knight',
+      rating: 9.0,
+      actors: [
+        { id: 301, name: 'Christian Bale' },
+        { id: 302, name: 'Heath Ledger' },
+        { id: 303, name: 'Aaron Eckhart' },
+        { id: 304, name: 'Michael Caine' },
+        { id: 305, name: 'Gary Oldman' },
+      ],
+    },
+    {
+      id: 4,
+      name: 'Pulp Fiction',
+      rating: 8.9,
+      actors: [
+        { id: 401, name: 'John Travolta' },
+        { id: 402, name: 'Samuel L. Jackson' },
+        { id: 403, name: 'Uma Thurman' },
+        { id: 404, name: 'Bruce Willis' },
+      ],
+    },
+    {
+      id: 5,
+      name: 'The Godfather',
+      rating: 9.2,
+      actors: [
+        { id: 501, name: 'Marlon Brando' },
+        { id: 502, name: 'Al Pacino' },
+        { id: 503, name: 'James Caan' },
+        { id: 504, name: 'Robert Duvall' },
+      ],
+    },
+  ];
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  // Mock data for popular actors
+  const popularActors = Array.from({ length: 8 }, (_, i) => ({
+    id: i + 1,
+    name: `Actor ${i + 1}`,
+    movieCount: (i + 1) * 5 + 10,
+  }));
+
+  return (
+    <div className="space-y-8 sm:space-y-12">
+      {/* Hero Section */}
+      <section className="relative bg-gradient-to-r from-blue-600 to-indigo-800 text-white overflow-hidden">
+        <div className="absolute inset-0 bg-black/30" />
+        <div className="relative max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8 lg:py-24 xl:py-32">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="text-center lg:text-left">
+              <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl xl:text-7xl">
+                Discover <span className="text-blue-200">movies</span> & <span className="text-blue-200">actors</span>
+              </h1>
+              <p className="mt-6 max-w-2xl mx-auto lg:mx-0 text-lg sm:text-xl text-blue-100">
+                Explore a vast collection of movies and actors, read reviews, and find your next favorite film. Our platform brings the world of cinema to your fingertips.
+              </p>
+              <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row justify-center lg:justify-start gap-3 sm:gap-4 px-4 sm:px-0">
+                <Button asChild className="bg-white text-blue-700 hover:bg-blue-50 h-11 sm:h-12 px-6 sm:px-8 text-sm sm:text-base w-full sm:w-auto transition-all duration-200 hover:scale-105 transform">
+                  <Link href="/movies" className="font-semibold">
+                    Browse movies
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="h-11 sm:h-12 px-6 sm:px-8 text-sm sm:text-base w-full sm:w-auto bg-transparent border-white/20 hover:bg-white/10 hover:border-white/30 text-white transition-all duration-200 hover:scale-105 transform">
+                  <Link href="/actors" className="font-semibold">
+                    Browse actors
+                  </Link>
+                </Button>
+              </div>
+            </div>
+            <div className="hidden lg:block">
+              {/* Hero image or illustration can be placed here */}
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </section>
+
+      {/* Featured movies Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+            Featured movies
+          </h2>
+          <Link href="/movies" className="text-blue-700 hover:underline font-medium">
+            View all
+          </Link>
+        </div>
+        <div className="mt-6 grid gap-4 sm:gap-5 md:gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {featuredMovies.map((movie) => (
+            <MovieCard
+              key={movie.id}
+              id={movie.id}
+              name={movie.name}
+              rating={movie.rating}
+              actors={movie.actors}
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* Popular actors Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+            Popular actors
+          </h2>
+          <Link href="/actors" className="text-blue-700 hover:underline font-medium">
+            View all
+          </Link>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-8 gap-6">
+          {popularActors.map((actor) => (
+            <div key={actor.id} className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 flex flex-col items-center">
+              <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-2xl font-bold text-blue-700 mb-2">
+                {actor.name.split(' ').map((n) => n[0]).join('')}
+              </div>
+              <div className="font-medium">{actor.name}</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400">{actor.movieCount} movies</div>
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

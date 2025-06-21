@@ -11,6 +11,9 @@ dependencies:
   '@radix-ui/react-slot':
     specifier: ^1.2.3
     version: 1.2.3(@types/react@19.1.8)(react@19.1.0)
+  '@tanstack/react-query':
+    specifier: ^5.80.10
+    version: 5.80.10(react@19.1.0)
   class-variance-authority:
     specifier: ^0.7.1
     version: 0.7.1
@@ -806,6 +809,19 @@ packages:
       postcss: 8.5.6
       tailwindcss: 4.1.10
     dev: true
+
+  /@tanstack/query-core@5.80.10:
+    resolution: {integrity: sha512-mUNQOtzxkjL6jLbyChZoSBP6A5gQDVRUiPvW+/zw/9ftOAz+H754zCj3D8PwnzPKyHzGkQ9JbH48ukhym9LK1Q==}
+    dev: false
+
+  /@tanstack/react-query@5.80.10(react@19.1.0):
+    resolution: {integrity: sha512-6zM098J8sLy9oU60XAdzUlAH4wVzoMVsWUWiiE/Iz4fd67PplxeyL4sw/MPcVJJVhbwGGXCsHn9GrQt2mlAzig==}
+    peerDependencies:
+      react: ^18 || ^19
+    dependencies:
+      '@tanstack/query-core': 5.80.10
+      react: 19.1.0
+    dev: false
 
   /@tybys/wasm-util@0.9.0:
     resolution: {integrity: sha512-6+7nlbMVX/PVDCwaIQ8nTOPveOcFLSt8GcXdx8hD0bt39uWxYT88uXzqTd4fTvqta7oeUJqudepapKNt2DYJFw==}
