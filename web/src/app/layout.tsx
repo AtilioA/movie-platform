@@ -22,22 +22,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans min-h-screen bg-gray-50 dark:bg-gray-900`}>
+      <body className={`${inter.variable} font-sans bg-gray-50 dark:bg-gray-900`}>
         <AppProvider>
-          <div className="min-h-screen flex flex-col">
+          <div className="flex flex-col">
             <Header />
             <main className="flex-1">
-              <div className="pb-6">
-                {children}
-              </div>
+              {children}
             </main>
-            <footer className="bg-white dark:bg-gray-800 shadow-inner mt-8">
-              <div className="pb-6">
-                <p className="text-center text-sm text-gray-500 dark:text-gray-400">
-                  &copy; {new Date().getFullYear()} Movie Platform.
-                </p>
-              </div>
-            </footer>
           </div>
         </AppProvider>
       </body>
