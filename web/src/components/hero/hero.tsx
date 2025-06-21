@@ -18,13 +18,13 @@ export function Hero() {
             <Button asChild className="bg-white text-blue-700 hover:bg-blue-50 h-14 px-8 text-lg w-full sm:w-auto transition-all duration-200 hover:scale-105 transform flex items-center gap-3">
               <Link href="/movies" className="flex items-center gap-2">
                 <Film className="w-5 h-5" />
-                Browse Movies
+                Browse movies
               </Link>
             </Button>
             <Button asChild variant="outline" className="h-14 px-8 text-lg w-full sm:w-auto bg-transparent border-white/20 hover:bg-white/10 hover:border-white-30 text-white transition-all duration-200 hover:scale-105 transform flex items-center gap-3">
               <Link href="/actors" className="flex items-center gap-2">
                 <User className="w-5 h-5" />
-                Browse Actors
+                Browse actors
               </Link>
             </Button>
           </div>
