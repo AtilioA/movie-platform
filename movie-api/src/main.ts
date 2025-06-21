@@ -12,6 +12,16 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const logger = new Logger('Bootstrap');
 
+  // Enable CORS in development
+  if (process.env.NODE_ENV !== 'production') {
+    app.enableCors({
+      origin: true, 
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+      credentials: true,
+    });
+    logger.log('CORS enabled for development');
+  }
+
   // Set api prefix for all routes
   const apiVersion = configService.get<string>('API_VERSION', '1');
   app.setGlobalPrefix('api');

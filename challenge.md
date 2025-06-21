@@ -13,7 +13,7 @@ Create a **Node.js** backend using **NestJS** and **TypeScript** for managing a 
 - [x] Implement **CRUD** (Create, Retrieve, Update, Delete) endpoints for:
   - [x] **Movies**
   - [x] **Actors**
-  - [ ] **Movie Ratings**
+  - [x] **Movie Ratings**
 - [x] Seed the database with some sample data.
 
 ### **API Functional Requirements**
@@ -23,9 +23,9 @@ Create a **Node.js** backend using **NestJS** and **TypeScript** for managing a 
   - [x] A **Movie** can have multiple **Actors**.
   - [x] A **Movie** can have multiple **Ratings**.
   - [x] An **Actor** can be in multiple **Movies**.
-- [~] Implement an API endpoint to:
-  - [ ] View all **Movies** an **Actor** has been in.
-  - [ ] View all **Actors** in a given **Movie**.
+- [x] Implement an API endpoint to:
+  - [x] View all **Movies** an **Actor** has been in.
+  - [x] View all **Actors** in a given **Movie**.
 
 ### **Security**
 

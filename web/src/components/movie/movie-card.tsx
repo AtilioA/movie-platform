@@ -7,11 +7,11 @@ import { ActorList } from './actor-list';
 import { MovieTitle } from './movie-title';
 
 interface MovieCardProps {
-  id: number;
+  id: string;
   name: string;
-  rating: number; // 1-5 rating
-  actors: Array<{
-    id: number;
+  rating?: number; // 1-5 rating
+  actors?: Array<{
+    id: string;
     name: string;
   }>;
   className?: string;
@@ -35,10 +35,10 @@ export function MovieCard({
         </div>
 
         <div className="mb-4">
-          <RatingStars rating={rating} />
+          <RatingStars rating={rating || 0} />
         </div>
 
-        <ActorList actors={actors} />
+        <ActorList actors={actors || []} />
       </CardContent>
     </Card>
   );

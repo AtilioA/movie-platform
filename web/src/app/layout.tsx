@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/layout/Header";
-import Container from "@/components/ui/container";
+import { QueryProvider } from "@/providers/query-provider";
 import { AppProvider } from "@/providers/app-provider";
+import Container from "@/components/ui/container";
+import Header from "@/components/layout/Header";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -22,18 +23,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans bg-gray-50 dark:bg-gray-900`}>
-        <AppProvider>
-          <div className="flex flex-col">
+    <html lang="en" className={inter.variable}>
+      <body>
+        <QueryProvider>
+          <AppProvider>
             <Header />
             <main className="flex-1">
-              <Container>
-                {children}
-              </Container>
+              <Container>{children}</Container>
             </main>
-          </div>
-        </AppProvider>
+          </AppProvider>
+        </QueryProvider>
       </body>
     </html>
   );

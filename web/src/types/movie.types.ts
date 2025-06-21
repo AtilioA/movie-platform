@@ -1,16 +1,17 @@
 import { Actor } from './actor.types';
 import { Rating } from './rating.types';
-import { Timestamps, PaginatedResponse } from './common.types';
+import { BaseShape, Response } from './common.types';
 
-export interface Movie extends Timestamps {
+export interface Movie extends BaseShape {
   id: string;
   title: string;
   averageRating?: number;
+  actors?: Actor[];
 }
 
 export interface MovieDetails extends Movie {
-  actors: Pick<Actor, 'id' | 'name'>[];
-  ratings: Rating[];
+  actors?: Actor[];
+  ratings?: Rating[];
 }
 
 export interface CreateMovieDto {
@@ -24,4 +25,4 @@ export interface UpdateMovieDto {
 }
 
 export type MovieResponse = MovieDetails;
-export type MoviesResponse = PaginatedResponse<Movie>;
+export type MoviesResponse = Response<Movie>;

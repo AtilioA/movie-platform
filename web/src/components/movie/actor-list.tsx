@@ -3,7 +3,7 @@
 import { cn } from '@/lib/utils';
 
 interface Actor {
-  id: number;
+  id: string;
   name: string;
 }
 
@@ -13,10 +13,10 @@ interface ActorListProps {
   className?: string;
 }
 
-export function ActorList({ 
-  actors, 
-  maxVisible = 3, 
-  className 
+export function ActorList({
+  actors,
+  maxVisible = 3,
+  className
 }: ActorListProps) {
   if (actors.length === 0) return null;
 

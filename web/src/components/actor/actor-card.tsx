@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { ActorTitle } from "./actor-title";
 
 export interface ActorCardProps {
-  id: number | string;
+  id: string;
   name: string;
   movieCount?: number;
   className?: string;
