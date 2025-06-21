@@ -15,9 +15,9 @@ A full-stack application for managing movies, actors, and ratings. Built with Ne
 - Docker
 - Node.js
 
-## Getting Started
+## Getting started
 
-### Backend Setup
+### Backend setup
 
 1. Navigate to the backend directory:
 
@@ -57,7 +57,7 @@ A full-stack application for managing movies, actors, and ratings. Built with Ne
 
 The API will be available at `http://localhost:3000`
 
-### Frontend Setup
+### Frontend setup
 
 1. Navigate to the frontend directory:
 
@@ -91,7 +91,7 @@ The API will be available at `http://localhost:3000`
 
 The frontend will be available at `http://localhost:3001`
 
-### Backend Tests
+### Backend tests
 
 ```bash
 cd movie-api
@@ -100,7 +100,7 @@ npm test
 yarn test
 ```
 
-## 🔧 API Documentation
+## 🔧 API documentation
 
 Once the backend is running, you can access the API documentation at `http://localhost:3000/api/docs` (Swagger UI).
 
@@ -122,7 +122,7 @@ Once the backend is running, you can access the API documentation at `http://loc
   - View ratings for movies
   - Add new ratings (with authentication)
 
-## ⚠️ Known Limitations
+## ⚠️ Known limitations
 
 ### Backend
 
@@ -131,6 +131,8 @@ Once the backend is running, you can access the API documentation at `http://loc
 - **Pagination**: A few resources (ratings) don't implement pagination.
 
 ### Frontend
+
+Front-end development was not finished due to time constraints.
 
 - **Actors**: Actor filmography is not integrated with the back-end.
 - **Search**: Search implementation was not finished.
