@@ -5,6 +5,7 @@ export interface Actor {
     id: string;
     title: string;
     year?: number;
+    rating?: number;
   }>;
 }
 

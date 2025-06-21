@@ -3,15 +3,16 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { getActorById } from '@/mock/actors';
+import { MovieCard } from '@/components/movie/movie-card';
 
 // Get actor data from our mock data
 async function getActor(id: string) {
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 100));
-  
+
   const actor = getActorById(id);
   if (!actor) return null;
-  
+
   return actor;
 }
 
@@ -43,17 +44,19 @@ export default async function ActorDetailPage({ params }: { params: { id: string
               <div className="text-muted-foreground">
                 {actor.movies.length} {actor.movies.length === 1 ? 'movie' : 'movies'}
               </div>
-              
+
               <div className="mt-6">
                 <h2 className="text-xl font-semibold mb-4">Movies</h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2">
                   {actor.movies.map((movie) => (
-                    <div key={movie.id} className="p-4 border rounded-lg hover:bg-accent/50 transition-colors">
-                      <h3 className="font-medium">{movie.title}</h3>
-                      {movie.year && (
-                        <p className="text-sm text-muted-foreground">{movie.year}</p>
-                      )}
-                    </div>
+                    <MovieCard
+                      key={movie.id}
+                      id={parseInt(movie.id, 10)}
+                      name={movie.title}
+                      rating={movie.rating || 8.0}
+                      actors={[{ id: parseInt(actor.id, 10), name: actor.name }]}
+                      className="h-full"
+                    />
                   ))}
                 </div>
               </div>
