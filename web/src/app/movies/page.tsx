@@ -1,29 +1,49 @@
-"use client"
+"use client";
 
 import { Button } from '@/components/ui/button';
-
 import { SearchSection } from '@/components/ui/search-section';
 import { MovieCard } from '@/components/movie/movie-card';
-
-import { PageHeader } from '@/components/ui/page-header';
-import { useState } from 'react';
-
+import { useState, useEffect } from 'react';
 import { mockMovies } from '@/mock/movies';
+import { Skeleton } from '@/components/ui/skeleton';
 
-export default function MoviesPage() {
+// Simulate a delay for loading
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+async function getMoviesWithDelay() {
+  await delay(1000); // 1000ms delay
+  return mockMovies;
+}
+
+function MoviesGrid() {
   const [query, setQuery] = useState('');
-  const movies = mockMovies;
+  const [movies, setMovies] = useState<typeof mockMovies>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Replace with proper search logic with debouncing and back-end
-  const filteredMovies = movies.filter((movie: { title: string }) =>
+  // Load movies with delay
+  useEffect(() => {
+    const loadMovies = async () => {
+      try {
+        setIsLoading(true);
+        const moviesData = await getMoviesWithDelay();
+        setMovies(moviesData);
+      } catch (error) {
+        console.error('Failed to load movies:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadMovies();
+  }, []);
+
+  // Filter movies based on search query
+  const filteredMovies = movies.filter(movie =>
     movie.title.toLowerCase().includes(query.toLowerCase())
   );
 
   return (
-    <main className="mx-auto px-4 py-8">
-      {/* Page Header */}
-      <PageHeader title="Movies" description="Browse our collection of movies" />
-
+    <div className="space-y-6">
       {/* Search */}
       <SearchSection
         placeholder="Search movies..."
@@ -32,41 +52,71 @@ export default function MoviesPage() {
       />
 
       {/* Movies Grid */}
-      <div className="mt-6 grid gap-4 sm:gap-5 md:gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {filteredMovies.map((movie) => (
-          <MovieCard
-            key={movie.id}
-            id={Number(movie.id)}
-            name={movie.title}
-            rating={Number(movie.rating)}
-            actors={movie.actors.map(actor => ({
-              id: Number(actor.id),
-              name: actor.name,
-            }))}
-          />
-        ))}
-      </div>
-
-      {/* Pagination (replace with hook and component) */}
-      <div className="mt-12 flex justify-center">
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" disabled>
-            Previous
-          </Button>
-          <Button variant="outline" size="sm" className="bg-primary/10">
-            1
-          </Button>
-          <Button variant="outline" size="sm">
-            2
-          </Button>
-          <Button variant="outline" size="sm">
-            3
-          </Button>
-          <Button variant="outline" size="sm">
-            Next
-          </Button>
+      {isLoading ? (
+        <MoviesGridSkeleton />
+      ) : (
+        <div className="grid gap-4 sm:gap-5 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {filteredMovies.map((movie) => (
+            <MovieCard
+              key={movie.id}
+              id={Number(movie.id)}
+              name={movie.title}
+              rating={Number(movie.rating)}
+              actors={movie.actors.map(actor => ({
+                id: Number(actor.id),
+                name: actor.name,
+              }))}
+            />
+          ))}
         </div>
-      </div>
-    </main>
+      )}
+
+      {/* Pagination */}
+      {!isLoading && <Pagination />}
+    </div>
   );
+}
+
+function Pagination() {
+  return (
+    <div className="mt-12 flex justify-center">
+      <div className="flex items-center gap-2">
+        <Button variant="outline" size="sm" disabled>
+          Previous
+        </Button>
+        <Button variant="outline" size="sm" className="bg-primary/10">
+          1
+        </Button>
+        <Button variant="outline" size="sm">
+          2
+        </Button>
+        <Button variant="outline" size="sm">
+          3
+        </Button>
+        <Button variant="outline" size="sm">
+          Next
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function MoviesGridSkeleton() {
+  return (
+    <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      {Array.from({ length: 8 }).map((_, i) => (
+        <div key={i} className="space-y-3">
+          <Skeleton className="aspect-[9/10] w-full rounded-lg" />
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-3/4" />
+            <Skeleton className="h-4 w-1/2" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default function MoviesPage() {
+  return <MoviesGrid />;
 }
