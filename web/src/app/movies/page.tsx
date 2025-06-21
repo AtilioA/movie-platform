@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
 import { MovieCard } from '@/components/movie/movie-card';
 import { SearchInput } from '@/components/ui/search-input';
+import { PageHeader } from '@/components/ui/page-header';
 import { useState } from 'react';
 
 export default function MoviesPage() {
@@ -28,21 +29,16 @@ export default function MoviesPage() {
   return (
     <main className="mx-auto px-4 py-8">
       {/* Page Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Movies</h1>
-        <p className="text-muted-foreground mt-2">
-          Browse our collection of movies
-        </p>
-      </div>
+      <PageHeader title="Movies" description="Browse our collection of movies" />
 
-      {/* Filters and Search */}
-      <div className="mb-8">
+      {/* Search */}
+      <div className="my-2">
         <Card>
-          <CardHeader className="pb-4">
+          <CardHeader className="py-4">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div className="relative flex-1 max-w-full">
                 <SearchInput
-                  placeholder="Search actors..."
+                  placeholder="Search movies..."
                   value={query}
                   onChange={e => setQuery(e.target.value)}
                 />

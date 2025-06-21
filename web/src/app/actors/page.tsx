@@ -1,11 +1,11 @@
 "use client"
 
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle } from '@/components/ui/card';
-import { Search, SlidersHorizontal, User } from 'lucide-react';
+import { Card, CardHeader } from '@/components/ui/card';
 import { SearchInput } from "@/components/ui/search-input";
 import { ActorCard } from "@/components/actor/actor-card";
-import Link from 'next/link';
+import { PageHeader } from '@/components/ui/page-header';
+
 import { useState } from 'react';
 
 export default function ActorsPage() {
@@ -24,12 +24,7 @@ export default function ActorsPage() {
   return (
     <main className="mx-auto px-4 py-8">
       {/* Page Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Actors</h1>
-        <p className="text-muted-foreground mt-2">
-          Browse our collection of talented actors
-        </p>
-      </div>
+      <PageHeader title="Actors" description="Browse our collection of talented actors" />
 
       {/* Search */}
       <div className="mb-8">
