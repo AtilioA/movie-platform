@@ -1,6 +1,5 @@
 import { Metadata } from 'next';
 import { AuthForm } from '@/components/auth/auth-form';
-import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Login - Movie Platform',
