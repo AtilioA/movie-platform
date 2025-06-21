@@ -1,8 +1,9 @@
 "use client"
 
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader } from '@/components/ui/card';
-import { SearchInput } from "@/components/ui/search-input";
+
+import { SearchSection } from '@/components/ui/search-section';
+
 import { ActorCard } from "@/components/actor/actor-card";
 import { PageHeader } from '@/components/ui/page-header';
 
@@ -27,21 +28,13 @@ export default function ActorsPage() {
       <PageHeader title="Actors" description="Browse our collection of talented actors" />
 
       {/* Search */}
-      <div className="mb-8">
-        <Card>
-          <CardHeader className="pb-4">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="relative flex-1 max-w-full">
-                <SearchInput
-                  placeholder="Search actors..."
-                  value={query}
-                  onChange={e => setQuery(e.target.value)}
-                />
-              </div>
-            </div>
-          </CardHeader>
-        </Card>
-      </div>
+      <SearchSection
+        placeholder="Search actors..."
+        value={query}
+        onChange={e => setQuery(e.target.value)}
+        className="mb-8"
+        cardHeaderClassName="pb-4"
+      />
 
       {/* Actors Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">

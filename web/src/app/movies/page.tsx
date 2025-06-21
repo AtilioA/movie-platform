@@ -1,9 +1,10 @@
 "use client"
 
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader } from '@/components/ui/card';
+
+import { SearchSection } from '@/components/ui/search-section';
 import { MovieCard } from '@/components/movie/movie-card';
-import { SearchInput } from '@/components/ui/search-input';
+
 import { PageHeader } from '@/components/ui/page-header';
 import { useState } from 'react';
 
@@ -32,21 +33,11 @@ export default function MoviesPage() {
       <PageHeader title="Movies" description="Browse our collection of movies" />
 
       {/* Search */}
-      <div className="my-2">
-        <Card>
-          <CardHeader className="py-4">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="relative flex-1 max-w-full">
-                <SearchInput
-                  placeholder="Search movies..."
-                  value={query}
-                  onChange={e => setQuery(e.target.value)}
-                />
-              </div>
-            </div>
-          </CardHeader>
-        </Card>
-      </div>
+      <SearchSection
+        placeholder="Search movies..."
+        value={query}
+        onChange={e => setQuery(e.target.value)}
+      />
 
       {/* Movies Grid */}
       <div className="mt-6 grid gap-4 sm:gap-5 md:gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
